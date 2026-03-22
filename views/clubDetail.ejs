@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head> <%- include("navbar.ejs") %> </head>
+    <body>
+        <div id="view-mode">
+            <h1><%= club.name %></h1>
+            <p><%= club.stadium %></p>
+            <p><%= club.country %></p>
+
+            <button onclick="toggleEdit()">Edit Club</button>
+
+            <form action="/clubs/<%= club.id %>/delete" method="POST" style="display:inline;" 
+                onsubmit="return confirm('Are you sure you want to delete this club?');">
+                <button type="submit" style="color: red;">Delete</button>
+            </form>
+        </div>
+
+        <div id="edit-mode" style="display:none;">
+            <h1>Editing <%= club.name %></h1>
+            <form action="/clubs/<%= club.id %>/update" method="POST">
+                <label for="name">Name: </label> 
+                <input type="text" name="name" id="name" value="<%= club.name %>" required> <br/>
+
+                <label for="stadium" >Stadium: </label>
+                <input type="text" name="stadium" id="stadium" value="<%= club.stadium %>"> <br/>
+
+                <label for="country"> Country </label>
+                <input type="text" name="country" id="country" value="<%= club.country %>"> <br/>
+
+                <button type="submit">Submit</button>
+                <button type="button" onclick="toggleEdit()">Cancel</button>
+            </form>
+        </div>
+
+        <h2>Members</h2>
+        <ul>
+            <% playersAtClub.forEach(player => { %>
+                <li><%= player.first_name %> <%= player.last_name %>
+                    <a href="/players/<%= player.id %>">View</a>
+                </li>
+            <% }) %>
+        </ul>
+        <a href="/clubs">Back to clubs</a>
+
+        <script>
+            function toggleEdit() {
+                const viewDiv = document.getElementById("view-mode");
+                const editDiv = document.getElementById("edit-mode");
+                if (viewDiv.style.display === "none") {
+                    viewDiv.style.display = "block";
+                    editDiv.style.display = "none";
+                } else {
+                    viewDiv.style.display = "none";
+                    editDiv.style.display = "block";
+                }
+            }
+        </script>
+    </body>
+</html>

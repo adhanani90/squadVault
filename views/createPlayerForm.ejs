@@ -1,0 +1,18 @@
+<h1>Add a New Player</h1>
+<form action="/players" method="POST">
+  <label>First Name: <input type="text" name="firstName" required></label><br>
+  <label>Last Name: <input type="text" name="lastName" required></label><br>
+  <label>Position: <input type="text" name="position"></label><br>
+  <label>Nationality: <input type="text" name="nationality"></label><br>
+  
+  <label>Club:
+    <select name="clubId" required>
+      <option value="">-- Please choose a club --</option>
+      <% clubs.forEach(club => { %>
+        <option value="<%= club.id %>"><%= club.name %></option>
+      <% }) %>
+    </select>
+  </label><br>
+  
+  <button type="submit">Register Player</button>
+</form>

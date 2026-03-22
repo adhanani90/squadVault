@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head> <%- include("navbar.ejs") %> </head>
+    <body>
+
+        <div id="view-mode">
+            <h1><%= player.first_name %> <%= player.last_name %></h1>
+            <p><%= player.nationality %></p>
+            <p><%= player.position %></p>
+            <p><%= player.date_of_birth %></p>
+            <a href="/clubs/<%= player.club_id %>">View club</a>
+
+            <button onclick="toggleEdit()">Edit Player</button>
+
+            <form action="/players/<%= player.id %>/delete" method="POST" style="display:inline;" 
+                onsubmit="return confirm('Are you sure you want to delete this player?');">
+                <button type="submit" style="color: red;">Delete</button>
+            </form>
+        </div>
+
+        <div id="edit-mode" style="display:none;">
+            <h1>Editing <%= player.first_name %> <%= player.last_name %></h1>
+            <form action="/players/<%= player.id %>/update" method="POST">
+                <label for="firstName">First Name: </label> 
+                <input type="text" name="firstName" id="firstName" value="<%= player.first_name %>" required> <br/>
+
+                <label for="lastName">Last Name: </label>
+                <input type="text" name="lastName" id="lastName" value="<%= player.last_name %>" required> <br/>
+
+                <label for="clubId">Club ID: </label>
+                <input type="text" name="clubId" id="clubId" value="<%= player.club_id %>" required> <br/>
+
+                <label for="position">Position: </label>
+                <input type="text" name="position" id="position" value="<%= player.position %>" required> <br/>
+
+                <label for="nationality">Nationality: </label>
+                <input type="text" name="nationality" id="nationality" value="<%= player.nationality %>" required> <br/>
+
+                <label for="dateOfBirth">Date of Birth: </label>
+                <input type="date" name="dateOfBirth" id="dateOfBirth" value="<%= player.date_of_birth %>" required> <br/>
+
+                <button type="submit">Submit</button>
+                <button type="button" onclick="toggleEdit()">Cancel</button>
+            </form>
+        
+        </div>
+        <a href="/players">Back to players</a>
+
+        <script>
+            function toggleEdit() {
+                const viewDiv = document.getElementById("view-mode");
+                const editDiv = document.getElementById("edit-mode");
+                if (viewDiv.style.display === "none") {
+                    viewDiv.style.display = "block";
+                    editDiv.style.display = "none";
+                } else {
+                    viewDiv.style.display = "none";
+                    editDiv.style.display = "block";
+                }
+            }
+        </script>
+
+
+    </body>
+</html>

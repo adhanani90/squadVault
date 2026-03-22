@@ -1,0 +1,42 @@
+<!-- index.ejs -->
+<!-- rewriting to include html5 boilerplate and current user -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SquadVault</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <style>
+        .error-list {color: red; margin-bottom: 10px;}
+        .form-group {margin-bottom: 15px;}
+        input {display: block; width: 100%; padding: 10px; margin-bottom: 15px;}
+    </style>
+</head>
+<body>
+    <h1>SquadVault</h1>
+    <a href="/clubs/new">Add a New Club</a>
+
+    <ul>
+    <% clubs.forEach(club => { %>
+      <li>
+        <strong><%= club.name %></strong> - <%= club.stadium %> (<%= club.country %>)
+        <a href="/clubs/<%= club.id %>">View Members</a>
+      </li>
+    <% }) %>
+    </ul>
+
+    <!-- now to include the current user defined in res.locals.user in app.js -->
+
+    <% if (locals.user) { %>
+        <p>Welcome <%= user.email %> !</p>
+        <a href="/auth/logout">Logout</a>
+    <% } else { %>
+        <a href="/auth/login">Login</a>
+        <a href="/auth/signup">Sign Up</a>
+    <% } %>
+
+
+</body>
+</html>
