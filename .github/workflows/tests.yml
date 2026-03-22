@@ -10,6 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    # This creates the temporary database "container" on GitHub
     services:
       postgres:
         image: postgres:15
@@ -25,16 +26,38 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm install
-      - name: Run Tests
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Database Schema (Populate)
+        run: node db/populateDB.js
+        env:
+          # These must match the 'services' block above
+          DB_USER: postgres
+          DB_HOST: localhost
+          DB_NAME: squadvault_test
+          DB_PASSWORD: password
+          DB_PORT: 5432
+
+      - name: Run Integration Tests
         run: npm test
         env:
+          # Your app uses this connection string thanks to our pool.js update
           DATABASE_URL: postgres://postgres:password@localhost:5432/squadvault_test
-          JWT_SECRET: supersecret_test_key
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'github_actions_test_secret' }}
           NODE_ENV: test
+
+      - name: Upload Coverage Report (Optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
