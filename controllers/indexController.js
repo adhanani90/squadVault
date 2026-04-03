@@ -80,7 +80,7 @@ async function updateClub(req, res) {
         }
     }
     await db.updateClub(clubId, { name, stadium, country });    
-    res.redirect(`/clubs`);
+    res.redirect(`/clubs/${clubId}`);
 }
 
 async function deleteClub(req, res) {

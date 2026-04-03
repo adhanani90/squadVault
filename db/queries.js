@@ -1,4 +1,3 @@
-const { get } = require("../app");
 const pool = require("./pool");
 
 // --- CLUB QUERIES ---
