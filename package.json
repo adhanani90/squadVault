@@ -4,7 +4,7 @@
   "description": "A comprehensive football club and player management vault built with Express and PostgreSQL.",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node populateDB.js && node app.js",
     "dev": "nodemon app.js",
     "test": "jest --globalSetup=./tests/setup.js --runInBand --detectOpenHandles",
     "test:watch": "jest --watchAll --globalSetup=./tests/setup.js --runInBand",
