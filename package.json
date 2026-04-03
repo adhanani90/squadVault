@@ -6,9 +6,9 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "jest --runInBand --detectOpenHandles",
-    "test:watch": "jest --watchAll",
-    "test:coverage": "jest --coverage --runInBand --detectOpenHandles"
+    "test": "jest --globalSetup=./tests/setup.js --runInBand --detectOpenHandles",
+    "test:watch": "jest --watchAll --globalSetup=./tests/setup.js --runInBand",
+    "test:coverage": "jest --globalSetup=./tests/setup.js --coverage --runInBand --detectOpenHandles"
   },
   "repository": {
     "type": "git",

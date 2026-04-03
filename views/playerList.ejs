@@ -1,24 +1,39 @@
-<h1>All Players</h1>
-<a href="/players/new">Add a New Player</a>
+<!-- playerList.ejs -->
+ <!-- This page is for the list of players. -->
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Position</th>
-      <th>Nationality</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% players.forEach(player => { %>
-      <tr>
-        <td><%= player.first_name %> <%= player.last_name %></td>
-        <td><%= player.position %></td>
-        <td><%= player.nationality %></td>
-        <td><a href="/players/<%= player.id %>">Details</a></td>
-      </tr>
-    <% }) %>
-  </tbody>
-  <a href = "/" class="btn btn-primary">Back to home</a>
-</table>
+ <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Players</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <h1>Players</h1>
+    <a href="/players/new">Add a New Player</a>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Position</th>
+          <th>Nationality</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% players.forEach(player => { %>
+          <tr>
+            <td><%= player.first_name %> <%= player.last_name %></td>
+            <td><%= player.position %></td>
+            <td><%= player.nationality %></td>
+            <td><a href="/players/<%= player.id %>">Details</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+      <a href = "/" class="btn btn-primary">Back to home</a>
+    </table>
+  </body>
+</html>

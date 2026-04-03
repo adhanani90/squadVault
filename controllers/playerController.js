@@ -26,8 +26,15 @@ async function createPlayer(req, res) {
     if (!errors.isEmpty()) {
         return res.status(400).send(errors.array());
     }
-    const { firstName, lastName, clubId, position, nationality } = req.body;
-    await db.insertPlayer({ firstName, lastName, clubId, position, nationality });
+    const { firstName, lastName, clubId, position, nationality, dateOfBirth } = req.body;
+    
+    // Validate that the club exists
+    const club = await db.getClub(clubId);
+    if (!club) {
+        return res.status(400).send({ error: 'Club does not exist' });
+    }
+    
+    await db.insertPlayer({ firstName, lastName, clubId, position, nationality, dateOfBirth });
     
     res.redirect("/players");
 }
@@ -39,6 +46,25 @@ async function updatePlayer(req, res) {
     }
     const {playerId} = req.params;
     const { firstName, lastName, clubId, position, nationality, dateOfBirth } = req.body;
+    
+    // Check if the player exists
+    const player = await db.getPlayer(playerId);
+    if (!player) {
+        return res.status(404).send({ error: 'Player not found' });
+    }
+    
+    // Validate that the club exists
+    const club = await db.getClub(clubId);
+    if (!club) {
+        return res.status(400).send({ error: 'Club does not exist' });
+    }
+    
+    // Check if another player already has this name
+    const existingPlayer = await db.getPlayerIdByName(firstName, lastName);
+    if (existingPlayer && existingPlayer !== parseInt(playerId)) {
+        return res.status(400).send({ error: 'Player name already taken' });
+    }
+    
     await db.updatePlayer(playerId, {
         firstName, lastName, clubId, position, nationality, dateOfBirth
     });

@@ -1,9 +1,10 @@
 const { Client } = require("pg");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
 
-const SQL = `
--- 1. Cleanup: Drop in reverse order of creation
-DROP TABLE IF EXISTS users;
+const SCHEMA_SQL = `
+-- 1. Cleanup
+DROP TABLE IF EXISTS users ;
 DROP TABLE IF EXISTS players;
 DROP TABLE IF EXISTS clubs;
 DROP TYPE IF EXISTS positions;
@@ -65,20 +66,11 @@ CREATE TABLE IF NOT EXISTS users (
   age INTEGER NOT NULL,
   bio VARCHAR ( 255 ) NOT NULL
 );
-
--- 8. Seed Users
-INSERT INTO users (email, password, age, bio)
-VALUES
-  ('new@gmail.com', 'password123', 25, 'I am a newbie'),
-  ('john@gmail.com', 'password456', 25, 'I am an intermediate'),
-  ('jane@gmail.com', 'password789', 25, 'I am a pro')
-ON CONFLICT DO NOTHING;
 `;
 
 async function main() {
   console.log("Seeding database...");
-  
-  // Tip: Passing an object is often safer than a template string for connection credentials
+
   const client = new Client({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
@@ -86,16 +78,48 @@ async function main() {
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
   });
-  
+
   try {
     await client.connect();
-    await client.query(SQL);
+    
+    // 1. Run the static Schema and Resource seeding
+    await client.query(SCHEMA_SQL);
+
+    // 2. Generate Hashes dynamically
+    const saltRounds = 10;
+    const hash1 = await bcrypt.hash('password123', saltRounds);
+    const hash2 = await bcrypt.hash('password456', saltRounds);
+    const hash3 = await bcrypt.hash('password789', saltRounds);
+
+    // 3. Seed Users using parameterized queries (Cleaner and safer)
+    const userSeedSQL = `
+      INSERT INTO users (email, password, age, bio)
+      VALUES 
+        ($1, $2, $3, $4),
+        ($5, $6, $7, $8),
+        ($9, $10, $11, $12)
+      ON CONFLICT (email) DO NOTHING;
+    `;
+
+    const userValues = [
+      'new@gmail.com', hash1, 25, 'I am a newbie',
+      'john@gmail.com', hash2, 25, 'I am an intermediate',
+      'jane@gmail.com', hash3, 25, 'I am a pro'
+    ];
+
+    await client.query(userSeedSQL, userValues);
+
     console.log("Seeding complete! Everything is tidy.");
   } catch (err) {
-    console.error("Error during seeding:", err.stack); // .stack gives better debugging than .message
+    console.error("Error during seeding:", err.stack);
+    throw err; // Important for globalSetup to catch failures
   } finally {
     await client.end();
   }
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = main;

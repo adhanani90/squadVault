@@ -17,7 +17,7 @@ const playerValidationRules = [
 playerRouter.get("/", playerController.getPlayersList);
 
 // GET /players/new - The PAGE to see the "Add Player" form
-playerRouter.get("/new", playerController.getCreatePlayerForm);
+playerRouter.get("/new", authMiddleware ,playerController.getCreatePlayerForm);
 
 // GET /players/:playerId - The PAGE for a specific player
 playerRouter.get("/:playerId", playerController.getPlayer);

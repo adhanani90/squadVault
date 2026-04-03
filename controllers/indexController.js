@@ -35,12 +35,24 @@ async function createClub(req, res) {
         });
     }
     const { name, stadium, country } = req.body;
+
+    // Check if name is taken by a different club
+    const existingClub = await db.getClubByName(name);
+    if (existingClub) {
+        return res.status(400).render('createClubForm', { 
+            errors: [{ msg: 'Club name already exists' }],
+            formData: req.body
+        });
+    }
+
     await db.insertClub({ name, stadium, country });
     res.redirect('/clubs');
 }
 
 
 async function updateClub(req, res) {
+    // need to check if the club exists first
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).render('createClubForm', { 
@@ -49,9 +61,26 @@ async function updateClub(req, res) {
         });
     }
     const {clubId} = req.params;
+    const club = await db.getClub(clubId);
+    
+    // Return 404 if club doesn't exist
+    if (!club) {
+        return res.status(404).render("404", { message: "Club not found" });
+    }
     const { name, stadium, country } = req.body;
+
+    // check if the new name is taken by another club
+    if (name.toLowerCase() !== club.name.toLowerCase()) {
+        const existingClub = await db.getClubByName(name);
+        if (existingClub) {
+            return res.status(400).render('createClubForm', { 
+                errors: [{ msg: 'Club name already exists' }],
+                formData: req.body
+            });
+        }
+    }
     await db.updateClub(clubId, { name, stadium, country });    
-    res.redirect(`/clubs/${clubId}`);
+    res.redirect(`/clubs`);
 }
 
 async function deleteClub(req, res) {

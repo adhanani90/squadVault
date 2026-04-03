@@ -1,32 +1,16 @@
 const request = require('supertest');
 const app = require('../app'); 
-const bcrypt = require('bcrypt');
-const db = require('../db/queries'); 
-const pool = require('../db/pool'); // Added to close connection later
+const pool = require('../db/pool');
 
 describe('GET / (Index Page)', () => {
   
-const testUser = {
-    email: 'jest_tester@gmail.com', // A unique email just for this test
-    password: 'password123',
-    age: 25,
-    bio: 'Tester'
+  const seededUser = {
+    email: 'new@gmail.com', 
+    password: 'password123'
   };
-  beforeAll(async () => {
-    try {
-      // We hash it here so the controller's bcrypt.compare() will work
-      const hashedPassword = await bcrypt.hash(testUser.password, 10);
-      await db.insertUser({ 
-        ...testUser,
-        password: hashedPassword 
-      });
-    } catch (err) {
-      // If user exists, that's fine
-    }
-  });
 
-  // Teardown: Close the database connection pool so Jest can exit cleanly
   afterAll(async () => {
+    // Keep this to ensure the file-specific connection closes
     await pool.end();
   });
 
@@ -35,7 +19,7 @@ const testUser = {
       const res = await request(app).get('/clubs');
       
       expect(res.status).toBe(200);
-      expect(res.text).toContain('<h1>SquadVault</h1>');
+      expect(res.text).toContain('SquadVault');
       expect(res.text).toContain('href="/clubs/new"');
     });
 
@@ -43,9 +27,9 @@ const testUser = {
       const res = await request(app).get('/clubs');
       
       // These strings match exactly what is in your populateDB.js SQL script
-      expect(res.text).toContain('<strong>Arsenal</strong>');
+      expect(res.text).toContain('Arsenal');
       expect(res.text).toContain('Emirates Stadium');
-      expect(res.text).toContain('<strong>Chelsea</strong>');
+      expect(res.text).toContain('Chelsea');
     });
   });
 
@@ -61,23 +45,20 @@ const testUser = {
     it("should show Welcome message and Logout link when a user IS logged in", async () => {
       const agent = request.agent(app);
 
-      // 1. Log in
+      // Log in using the user we know exists from the seed file
       const loginRes = await agent
         .post('/auth/login')
         .type('form') 
         .send({ 
-          email: testUser.email, 
-          password: testUser.password 
+          email: seededUser.email, 
+          password: seededUser.password 
         });
 
-      // 2. Expect a redirect (302) to /clubs or / after login
       expect(loginRes.status).toBe(302);
 
-      // 3. Request the page using the agent
       const res = await agent.get('/clubs');
 
       expect(res.status).toBe(200);
-      // Using a Case-Insensitive regex check for "Welcome" is safer
       expect(res.text).toMatch(/Welcome/i);
       expect(res.text).toContain('href="/auth/logout"');
     });

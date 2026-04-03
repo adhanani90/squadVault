@@ -1,3 +1,4 @@
+const { get } = require("../app");
 const pool = require("./pool");
 
 // --- CLUB QUERIES ---
@@ -28,13 +29,13 @@ async function getAllPlayers() {
 
 async function getPlayer(id) {
     const { rows } = await pool.query("SELECT * FROM players WHERE id = $1", [id]);
-    return rows[0];
+    return rows[0] || null;
 }
 
-async function insertPlayer({ firstName, lastName, clubId, position, nationality }) {
+async function insertPlayer({ firstName, lastName, clubId, position, nationality, dateOfBirth }) {
     await pool.query(
-        "INSERT INTO players (first_name, last_name, club_id, position, nationality) VALUES ($1, $2, $3, $4, $5)",
-        [firstName, lastName, clubId, position, nationality]
+        "INSERT INTO players (first_name, last_name, club_id, position, nationality, date_of_birth) VALUES ($1, $2, $3, $4, $5, $6)",
+        [firstName, lastName, clubId, position, nationality, dateOfBirth]
     );
 }
 
@@ -66,7 +67,7 @@ async function updatePlayer(playerId, data) {
 
 async function deletePlayer(playerId) {
     await pool.query("DELETE FROM players WHERE id = $1", [playerId]);
-    return playerId;
+    return null;
 }
 
 async function getUserByEmail(email) {
@@ -84,7 +85,25 @@ async function insertUser(user) {
     return rows[0];
 }
 
+async function deleteUser(userId) {
+    await pool.query("DELETE FROM users WHERE id = $1", [userId]);
+}
 
+async function getClubByName(name) {
+    const { rows } = await pool.query(
+        "SELECT * FROM clubs WHERE LOWER(name) = LOWER($1)", 
+        [name]
+    );
+    return rows[0];
+}
+
+async function getPlayerIdByName(firstName, lastName) {
+    const { rows } = await pool.query(
+        "SELECT id FROM players WHERE LOWER(first_name) = LOWER($1) AND LOWER(last_name) = LOWER($2)", 
+        [firstName, lastName]
+    );
+    return rows[0]?.id || null;
+}
 
 module.exports = {
     getAllClubs,
@@ -100,4 +119,7 @@ module.exports = {
     deletePlayer,
     getUserByEmail,
     insertUser,
+    deleteUser,
+    getClubByName,
+    getPlayerIdByName
 };
