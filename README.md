@@ -1,2 +1,1 @@
-TODO: Should have a login and authentication functionality. Now need to create the
-views for the login and signup forms. Add logout button.
+[![SquadVault CI](https://github.com/adhanani90/squadVault/actions/workflows/tests.yml/badge.svg)](https://github.com/adhanani90/squadVault/actions/workflows/tests.yml)
