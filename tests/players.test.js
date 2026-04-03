@@ -62,7 +62,7 @@ describe('Players Routes', () => {
                 .post('/players')
                 .send({ firstName: 'FC', lastName: 'Test', position: 'Attacker', nationality: 'England', clubId: 1, dateOfBirth: '2001-09-05' });
             expect(res.status).toBe(302);
-            expect(res.header.location).toBe('/login');
+            expect(res.header.location).toBe('/auth/login');
         });
 
         it('should work now as we include auth via the agent', async () => {
@@ -129,7 +129,7 @@ describe('Players Routes', () => {
                 .post('/players/1/update')
                 .send({ firstName: 'FC', lastName: 'Test', position: 'Attacker', nationality: 'England', clubId: 1, dateOfBirth: '2001-09-05' });
             expect(res.status).toBe(302);
-            expect(res.header.location).toBe('/login');
+            expect(res.header.location).toBe('/auth/login');
         });
 
         it('should work now as we include auth via the agent', async () => {
@@ -197,7 +197,7 @@ describe('Players Routes', () => {
                 .post('/players/1/delete')
                 .send({ firstName: 'FC', lastName: 'Test', position: 'Attacker', nationality: 'England', clubId: 1, dateOfBirth: '2001-09-05' });
             expect(res.status).toBe(302);
-            expect(res.header.location).toBe('/login');
+            expect(res.header.location).toBe('/auth/login');
         }); 
 
         it('should work now as we include auth via the agent', async () => {

@@ -69,7 +69,7 @@ describe('Clubs Routes', () => {
             .send({ name: 'FC Test', country: 'England', stadium: 'Test Arena' });
 
         expect(res.status).toBe(302);
-        expect(res.header.location).toBe('/login');
+        expect(res.header.location).toBe('/auth/login');
     });
 
     it('should work now as we include auth via the agent', async () => {
@@ -101,7 +101,7 @@ describe('Clubs Routes', () => {
             .post('/clubs/1/update')
             .send({ name: 'FC Test', country: 'England', stadium: 'Test Arena' });
         expect(res.status).toBe(302);
-        expect(res.header.location).toBe('/login');
+        expect(res.header.location).toBe('/auth/login');
     });
 
     it('should work now as we include auth via the agent', async () => {
@@ -117,7 +117,7 @@ describe('Clubs Routes', () => {
                 stadium: 'Estadio Test' 
             });
         expect(res.status).toBe(302);
-        expect(res.header.location).toBe('/clubs');
+        expect(res.header.location).toBe('/clubs/1');
     });
 
     it('should fail if the club does not exist', async () => {
@@ -160,7 +160,7 @@ describe('Clubs Routes', () => {
             .post('/clubs/1/delete')
             .send({ name: 'FC Test', country: 'England', stadium: 'Test Arena' });
         expect(res.status).toBe(302);
-        expect(res.header.location).toBe('/login');
+        expect(res.header.location).toBe('/auth/login');
     });
 
     it('should work now as we include auth via the agent', async () => {

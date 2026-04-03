@@ -28,7 +28,7 @@ describe('Error Handling & Edge Cases', () => {
         });
       
       expect(res.status).toBe(302);
-      expect(res.header.location).toBe('/login');
+      expect(res.header.location).toBe('/auth/login');
     });
 
     it('should redirect to /login when hitting protected route with expired/malformed token', async () => {
@@ -37,7 +37,7 @@ describe('Error Handling & Edge Cases', () => {
         .set('Cookie', 'jwt=malformed');
       
       expect(res.status).toBe(302);
-      expect(res.header.location).toBe('/login');
+      expect(res.header.location).toBe('/auth/login');
     });
   });
 
