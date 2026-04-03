@@ -47,6 +47,7 @@ jobs:
           DB_NAME: squadvault_test
           DB_PASSWORD: password
           DB_PORT: 5432
+          DATABASE_URL: postgres://postgres:password@localhost:5432/squadvault_test
 
       - name: Run Integration Tests
         run: npm test
