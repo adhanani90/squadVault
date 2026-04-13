@@ -1,0 +1,105 @@
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { api } from '../api/client';
+import { useAuth } from '../context/AuthContext';
+import ErrorList from '../components/ErrorList';
+import { useDebounce } from '../hooks/useDebounce';
+
+export default function ClubsPage() {
+  const { user } = useAuth();
+  const [clubs, setClubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState({ name: '', country: '', stadium: '' });
+  const [errors, setErrors] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [countryFilter, setCountryFilter] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
+  const debouncedCountry = useDebounce(countryFilter, 300);
+  const [displayedClubs, setDisplayedClubs] = useState([]);
+  const [searching, setSearching] = useState(false);
+
+  const fetchClubs = () =>
+    api.get('/clubs').then(data => {
+      setClubs(data);
+      setDisplayedClubs(data);
+    }).finally(() => setLoading(false));
+
+  useEffect(() => { fetchClubs(); }, []);
+
+  useEffect(() => {
+    if (!debouncedSearch && !debouncedCountry) { setDisplayedClubs(clubs); return; }
+    setSearching(true);
+    api.get(`/clubs/search?searchedName=${encodeURIComponent(debouncedSearch)}&country=${encodeURIComponent(debouncedCountry)}`)
+      .then(data => setDisplayedClubs(data))
+      .finally(() => setSearching(false));
+  }, [debouncedSearch, debouncedCountry, clubs]);
+
+  const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setErrors([]);
+    setSubmitting(true);
+    try {
+      await api.post('/clubs', form);
+      setForm({ name: '', country: '', stadium: '' });
+      setLoading(true);
+      await fetchClubs();
+    } catch (err) {
+      setErrors(err.errors ?? [{ msg: err.message }]);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) return <p>Loading clubs…</p>;
+
+  return (
+    <div>
+      <h1>Clubs</h1>
+
+      <div>
+        <input type="search" placeholder="Search by name…" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+        {' '}
+        <input type="search" placeholder="Filter by country…" value={countryFilter} onChange={e => setCountryFilter(e.target.value)} />
+        {searching && <span> Searching…</span>}
+      </div>
+
+      {displayedClubs.length === 0 ? (
+        <p>No clubs found.</p>
+      ) : (
+        <ul>
+          {displayedClubs.map(club => (
+            <li key={club.id}>
+              <Link to={`/clubs/${club.id}`}>{club.name}</Link>
+              {' — '}{club.country} · {club.stadium}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {user ? (
+        <section>
+          <h2>Add a Club</h2>
+          <ErrorList errors={errors} />
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label>Name<br /><input name="name" value={form.name} onChange={handleChange} required /></label>
+            </div>
+            <div>
+              <label>Country<br /><input name="country" value={form.country} onChange={handleChange} required /></label>
+            </div>
+            <div>
+              <label>Stadium<br /><input name="stadium" value={form.stadium} onChange={handleChange} required /></label>
+            </div>
+            <button type="submit" disabled={submitting}>{submitting ? 'Adding…' : 'Add Club'}</button>
+          </form>
+        </section>
+      ) : (
+        <p><Link to="/login">Log in</Link> to add a club.</p>
+      )}
+    </div>
+  );
+}
