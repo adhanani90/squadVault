@@ -18,12 +18,9 @@ const loginValidationRules = [
 ]
 
 
-authRouter.get('/signup', authController.getSignupForm);
 authRouter.post('/signup', signupValidationRules, authController.createUser);
-
-authRouter.get('/login', authController.getLoginForm);
 authRouter.post('/login', loginValidationRules, authController.loginUser);
-
-authRouter.get('/logout', authController.logoutUser);
+authRouter.post('/logout', authController.logoutUser);
+authRouter.get('/me', authController.getMe);
 
 module.exports = authRouter;

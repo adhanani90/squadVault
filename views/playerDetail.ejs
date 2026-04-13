@@ -20,6 +20,11 @@
 
         <div id="edit-mode" style="display:none;">
             <h1>Editing <%= player.first_name %> <%= player.last_name %></h1>
+            <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+              <ul style="color:red;">
+                <% errors.forEach(e => { %><li><%= e.msg %></li><% }) %>
+              </ul>
+            <% } %>
             <form action="/players/<%= player.id %>/update" method="POST">
                 <label for="firstName">First Name: </label> 
                 <input type="text" name="firstName" id="firstName" value="<%= player.first_name %>" required> <br/>
@@ -58,6 +63,11 @@
                     editDiv.style.display = "block";
                 }
             }
+            // Auto-open edit mode if the server returned errors
+            <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+            document.getElementById("view-mode").style.display = "none";
+            document.getElementById("edit-mode").style.display = "block";
+            <% } %>
         </script>
 
 

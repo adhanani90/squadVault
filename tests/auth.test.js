@@ -1,25 +1,25 @@
 // tests/auth.test.js
-const { 
-  signupUser, 
+const request = require('supertest');
+const app = require('../app');
+const {
+  signupUser,
   loginUser,
-  logoutUser, 
-  deleteTestUser, 
-  expectValidationError 
+  logoutUser,
+  deleteTestUser,
+  expectValidationError
 } = require('./testHelper');
 
 describe('Testing Auth Routes', () => {
   const testEmail = 'api-test@gmail.com';
   const testPassword = 'password123';
-  const seededEmail = 'new@gmail.com'; // From your populateDB.js
+  const seededEmail = 'new@gmail.com';
 
-// Cleanup DB after each test so we can reuse the same email
-    afterEach(async () => {
-        await deleteTestUser(testEmail);
-    });
+  afterEach(async () => {
+    await deleteTestUser(testEmail);
+  });
 
   describe('Signup Logic', () => {
-    it("should redirect when signup is successful", async () => {
-      // UTILIZING HELPER: signupUser does the POST for us
+    it('should return 201 when signup is successful', async () => {
       const res = await signupUser({
         email: testEmail,
         password: testPassword,
@@ -27,11 +27,11 @@ describe('Testing Auth Routes', () => {
         age: 25,
         bio: 'Hello'
       });
-      
-      expect(res.status).toBe(302);
+      expect(res.status).toBe(201);
+      expect(res.body.user.email).toBe(testEmail);
     });
 
-    it("should fail when passwords don't match", async () => {
+    it("should return 400 when passwords don't match", async () => {
       const res = await signupUser({
         email: testEmail,
         password: testPassword,
@@ -39,12 +39,11 @@ describe('Testing Auth Routes', () => {
         age: 25,
         bio: 'Hello'
       });
-      
+      expect(res.status).toBe(400);
       expectValidationError(res, 'Passwords do not match');
     });
 
-    it("should fail when password is too short", async () => {
-      // needs to be at least 6 characters
+    it('should return 400 when password is too short', async () => {
       const res = await signupUser({
         email: testEmail,
         password: '12345',
@@ -52,12 +51,11 @@ describe('Testing Auth Routes', () => {
         age: 25,
         bio: 'Hello'
       });
-      
+      expect(res.status).toBe(400);
       expectValidationError(res, 'Password must be 6-255 characters');
     });
 
-    it("should fail when email already exists", async () => {
-      // 1. Create the user so they can log in
+    it('should return 400 when email already exists', async () => {
       await signupUser({
         email: testEmail,
         password: testPassword,
@@ -66,7 +64,6 @@ describe('Testing Auth Routes', () => {
         bio: 'Hello'
       });
 
-      // 2. Try to create the user again
       const res = await signupUser({
         email: testEmail,
         password: testPassword,
@@ -74,17 +71,13 @@ describe('Testing Auth Routes', () => {
         age: 25,
         bio: 'Hello'
       });
-
+      expect(res.status).toBe(400);
       expectValidationError(res, 'Email already exists');
-
-    })
-
-
+    });
   });
 
   describe('Login & Session Logic', () => {
-    it("should login successfully and access a protected route", async () => {
-      // 1. First, create the user so they can log in
+    it('should return 200 and user data on successful login', async () => {
       await signupUser({
         email: testEmail,
         password: testPassword,
@@ -93,28 +86,27 @@ describe('Testing Auth Routes', () => {
         bio: 'Hello'
       });
 
-      // 2. UTILIZING HELPER: loginUser returns the 'agent' with the cookie
       const { res, agent } = await loginUser(testEmail, testPassword);
-      expect(res.status).toBe(302);
+      expect(res.status).toBe(200);
+      expect(res.body.user.email).toBe(testEmail);
 
-      // 3. Test if the session actually works
-      const profileRes = await agent.get('/clubs/new'); // Protected route that requires auth
-      expect(profileRes.status).toBe(200);
+      // Cookie is set — /auth/me should return the user
+      const meRes = await agent.get('/auth/me');
+      expect(meRes.status).toBe(200);
+      expect(meRes.body.user.email).toBe(testEmail);
     });
 
-    it("should fail to login with incorrect password", async () => {
+    it('should return 401 with incorrect password', async () => {
       const { res } = await loginUser(testEmail, 'wrongpassword');
       expect(res.status).toBe(401);
       expectValidationError(res, 'Email or password is incorrect');
     });
 
-
-    it("should logout successfully", async () => {
+    it('should logout successfully and clear the session', async () => {
       const { agent } = await loginUser(seededEmail, 'password123');
-      
-      // UTILIZING HELPER: logoutUser
       const res = await logoutUser(agent);
-      expect(res.status).toBe(302);
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe('Logged out');
     });
   });
 });

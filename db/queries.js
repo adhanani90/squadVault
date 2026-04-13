@@ -22,12 +22,23 @@ async function insertClub({ name, stadium, country }) {
 // --- PLAYER QUERIES ---
 
 async function getAllPlayers() {
-    const { rows } = await pool.query("SELECT * FROM players ORDER BY last_name ASC");
+    const { rows } = await pool.query(
+        `SELECT p.*, c.name AS club_name
+         FROM players p
+         LEFT JOIN clubs c ON c.id = p.club_id
+         ORDER BY p.last_name ASC`
+    );
     return rows;
 }
 
 async function getPlayer(id) {
-    const { rows } = await pool.query("SELECT * FROM players WHERE id = $1", [id]);
+    const { rows } = await pool.query(
+        `SELECT p.*, c.name AS club_name
+         FROM players p
+         LEFT JOIN clubs c ON c.id = p.club_id
+         WHERE p.id = $1`,
+        [id]
+    );
     return rows[0] || null;
 }
 
@@ -104,6 +115,98 @@ async function getPlayerIdByName(firstName, lastName) {
     return rows[0]?.id || null;
 }
 
+async function searchClubs(searchTerm, country) {
+    // Contains search: "%term%" matches anywhere in the name.
+    // ORDER BY POSITION ranks results where the term appears earliest first
+    // (e.g. "United FC" before "Manchester United" when searching "united"),
+    // with a secondary alphabetical sort for ties.
+    const term = `%${searchTerm || ''}%`;
+    const raw  = searchTerm || '';
+
+    if (country && country.trim() !== '') {
+        const { rows } = await pool.query(
+            `SELECT * FROM clubs
+             WHERE name ILIKE $1 AND country ILIKE $2
+             ORDER BY POSITION(lower($3) IN lower(name)), name`,
+            [term, `%${country.trim()}%`, raw]
+        );
+        return rows;
+    } else {
+        const { rows } = await pool.query(
+            `SELECT * FROM clubs
+             WHERE name ILIKE $1
+             ORDER BY POSITION(lower($2) IN lower(name)), name`,
+            [term, raw]
+        );
+        return rows;
+    }
+}
+
+
+// --- TRANSFER QUERIES ---
+
+async function getTransfersForPlayer(playerId) {
+    const { rows } = await pool.query(
+        `SELECT
+            t.id,
+            t.transferred_at,
+            t.amount,
+            fc.name AS from_club_name,
+            tc.name AS to_club_name
+        FROM transfers t
+        LEFT JOIN clubs fc ON fc.id = t.from_club_id
+        JOIN clubs tc ON tc.id = t.to_club_id
+        WHERE t.player_id = $1
+        ORDER BY t.transferred_at DESC`,
+        [playerId]
+    );
+    return rows;
+}
+
+async function executeTransfer({ playerId, fromClubId, toClubId, amount, transferredAt, updateCurrentClub = true }) {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        if (updateCurrentClub) {
+            await client.query(
+                'UPDATE players SET club_id = $1 WHERE id = $2',
+                [toClubId, playerId]
+            );
+        }
+        await client.query(
+            `INSERT INTO transfers (player_id, from_club_id, to_club_id, amount, transferred_at)
+             VALUES ($1, $2, $3, $4, COALESCE($5, NOW()))`,
+            [playerId, fromClubId, toClubId, amount, transferredAt ?? null]
+        );
+        await client.query('COMMIT');
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
+}
+
+
+async function searchPlayers(searchTerm, nationality) {
+    // searchTerm is a string for first_name or last_name
+    // nationality is a string. Both are optional
+    if (nationality && nationality.trim() !== '') {
+        const { rows } = await pool.query(
+            "SELECT * FROM players WHERE nationality ILIKE $1 AND (first_name ILIKE $2 OR last_name ILIKE $2)",
+            [`%${nationality.trim()}%`, `%${searchTerm || ''}%`]  // empty searchTerm matches anything
+        );
+        return rows;
+    } else {
+        const { rows } = await pool.query(
+            "SELECT * FROM players WHERE first_name ILIKE $1 OR last_name ILIKE $1",
+            [`%${searchTerm || ''}%`]  // empty searchTerm matches anything
+        );
+        return rows;
+    }
+}
+
+
 module.exports = {
     getAllClubs,
     getClub,
@@ -120,5 +223,9 @@ module.exports = {
     insertUser,
     deleteUser,
     getClubByName,
-    getPlayerIdByName
+    getPlayerIdByName,
+    searchClubs,
+    searchPlayers,
+    getTransfersForPlayer,
+    executeTransfer
 };

@@ -10,9 +10,9 @@ const clubValidationRules = [
     body('country').trim().notEmpty().isLength({ max: 255 })
 ];
 
-indexRouter.get("/", indexController.getClubsList); 
-indexRouter.get("/new", indexController.getCreateClubForm); 
-indexRouter.get("/:clubId", indexController.getClub); 
+indexRouter.get("/", indexController.getClubsList);
+indexRouter.get("/search", indexController.searchClubs);
+indexRouter.get("/:clubId", indexController.getClub);
 
 
 indexRouter.post("/", 
@@ -33,5 +33,7 @@ indexRouter.post("/:clubId/delete",
     authMiddleware,           
     indexController.deleteClub
 );
+
+
 
 module.exports = indexRouter;

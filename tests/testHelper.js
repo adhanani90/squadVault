@@ -22,7 +22,7 @@ async function signupUser(userData) {
 
 // Logout
 async function logoutUser(agent) {
-  return agent.get('/auth/logout');
+  return agent.post('/auth/logout');
 }
 
 /**
@@ -35,6 +35,10 @@ async function createClubApi(agent, clubData) {
 
 async function createPlayerApi(agent, playerData) {
   return agent.post('/players').send(playerData);
+}
+
+async function transferPlayerApi(agent, playerId, toClubId, amount) {
+  return agent.post(`/players/${playerId}/transfer`).send({ toClubId, amount });
 }
 
 /**
@@ -51,12 +55,11 @@ async function deleteTestUser(email) {
  * ASSERTION HELPERS
  */
 function expectValidationError(res, expectedText) {
-  // Check if response has HTML text (from render)
-  if (res.text && typeof res.text === 'string') {
-    expect(res.text).toContain(expectedText);
-  } else {
-    throw new Error(`Response missing text. Status: ${res.status}, Body: ${JSON.stringify(res.body)}`);
-  }
+    const errors = res.body?.errors || [];
+    const found = errors.some(e => e.msg && e.msg.includes(expectedText));
+    if (!found) {
+        throw new Error(`Expected error "${expectedText}" not found in: ${JSON.stringify(errors)}`);
+    }
 }
 
 module.exports = {
@@ -65,6 +68,7 @@ module.exports = {
   logoutUser,
   createClubApi,
   createPlayerApi,
+  transferPlayerApi,
   deleteTestUser,
   expectValidationError
 };

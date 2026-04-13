@@ -3,8 +3,9 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 const SCHEMA_SQL = `
--- 1. Cleanup
-DROP TABLE IF EXISTS users ;
+-- 1. Cleanup (order matters: transfers references players and clubs)
+DROP TABLE IF EXISTS transfers;
+DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS players;
 DROP TABLE IF EXISTS clubs;
 DROP TYPE IF EXISTS positions;
@@ -30,22 +31,49 @@ CREATE TABLE IF NOT EXISTS players (
   first_name VARCHAR ( 255 ) NOT NULL,
   last_name VARCHAR ( 255 ) NOT NULL,
   nationality VARCHAR ( 255 ) NOT NULL,
-  position positions NOT NULL, 
+  position positions NOT NULL,
   date_of_birth DATE NOT NULL,
   club_id INTEGER,
   CONSTRAINT fk_players_club FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE SET NULL
 );
 
--- 5. Seed Clubs
-INSERT INTO clubs (name, country, stadium) 
+-- 5. Create Transfers Table
+CREATE TABLE IF NOT EXISTS transfers (
+  id             INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  player_id      INTEGER NOT NULL,
+  from_club_id   INTEGER,
+  to_club_id     INTEGER NOT NULL,
+  transferred_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  amount         NUMERIC(15, 2) NOT NULL DEFAULT 0,
+  CONSTRAINT fk_transfers_player FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE,
+  CONSTRAINT fk_transfers_from   FOREIGN KEY (from_club_id) REFERENCES clubs(id) ON DELETE SET NULL,
+  CONSTRAINT fk_transfers_to     FOREIGN KEY (to_club_id) REFERENCES clubs(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_transfers_player_id     ON transfers(player_id);
+CREATE INDEX IF NOT EXISTS idx_transfers_transferred_at ON transfers(transferred_at DESC);
+
+-- 6. Create User Table
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  email VARCHAR ( 255 ) NOT NULL UNIQUE,
+  password VARCHAR ( 255 ) NOT NULL,
+  age INTEGER NOT NULL,
+  bio VARCHAR ( 255 ) NOT NULL
+);
+
+-- 7. Seed Clubs
+INSERT INTO clubs (name, country, stadium)
 VALUES
   ('Arsenal', 'England', 'Emirates Stadium'),
   ('Manchester United', 'England', 'Old Trafford'),
   ('Liverpool', 'England', 'Anfield'),
-  ('Chelsea', 'England', 'Stamford Bridge')
+  ('Chelsea', 'England', 'Stamford Bridge'),
+  ('Manchester City', 'England', 'Etihad Stadium'),
+  ('Southampton', 'England', 'St. Mary''s Stadium')
 ON CONFLICT (name) DO NOTHING;
 
--- 6. Seed Players
+-- 8. Seed Players
 INSERT INTO players (first_name, last_name, nationality, position, date_of_birth, club_id)
 VALUES
   ('Bukayo', 'Saka', 'England', 'Attacker', '2001-09-05', (SELECT id FROM clubs WHERE name = 'Arsenal')),
@@ -58,14 +86,23 @@ VALUES
   ('Reece', 'James', 'England', 'Defender', '1999-12-08', (SELECT id FROM clubs WHERE name = 'Chelsea'))
 ON CONFLICT DO NOTHING;
 
--- 7. Create User Table
-CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  email VARCHAR ( 255 ) NOT NULL UNIQUE,
-  password VARCHAR ( 255 ) NOT NULL,
-  age INTEGER NOT NULL,
-  bio VARCHAR ( 255 ) NOT NULL
-);
+-- 9. Seed Transfers
+INSERT INTO transfers (player_id, from_club_id, to_club_id, transferred_at, amount)
+VALUES
+  (
+    (SELECT id FROM players WHERE first_name = 'Cole'   AND last_name = 'Palmer'),
+    (SELECT id FROM clubs   WHERE name = 'Manchester City'),
+    (SELECT id FROM clubs   WHERE name = 'Chelsea'),
+    '2023-09-01',
+    47000000.00
+  ),
+  (
+    (SELECT id FROM players WHERE first_name = 'Virgil' AND last_name = 'van Dijk'),
+    (SELECT id FROM clubs   WHERE name = 'Southampton'),
+    (SELECT id FROM clubs   WHERE name = 'Liverpool'),
+    '2018-01-01',
+    84650000.00
+  );
 `;
 
 async function main() {

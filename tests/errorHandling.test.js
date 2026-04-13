@@ -1,5 +1,4 @@
 // tests/errorHandling.test.js
-// Test error scenarios and edge cases
 
 const request = require('supertest');
 const app = require('../app');
@@ -17,27 +16,21 @@ describe('Error Handling & Edge Cases', () => {
   });
 
   describe('Auth Middleware - Invalid JWT', () => {
-    it('should redirect to /login when token is invalid on protected route', async () => {
+    it('should return 401 when token is invalid on a protected route', async () => {
       const res = await request(app)
         .post('/clubs')
         .set('Cookie', 'jwt=invalid.token.here')
-        .send({
-          name: 'Test Club',
-          stadium: 'Test Stadium',
-          country: 'England'
-        });
-      
-      expect(res.status).toBe(302);
-      expect(res.header.location).toBe('/auth/login');
+        .send({ name: 'Test Club', stadium: 'Test Stadium', country: 'England' });
+      expect(res.status).toBe(401);
+      expect(res.body.error).toBe('Unauthorized');
     });
 
-    it('should redirect to /login when hitting protected route with expired/malformed token', async () => {
+    it('should return 401 when hitting a protected route with a malformed token', async () => {
       const res = await request(app)
         .post('/players')
         .set('Cookie', 'jwt=malformed');
-      
-      expect(res.status).toBe(302);
-      expect(res.header.location).toBe('/auth/login');
+      expect(res.status).toBe(401);
+      expect(res.body.error).toBe('Unauthorized');
     });
   });
 
@@ -45,134 +38,80 @@ describe('Error Handling & Edge Cases', () => {
     it('should return 404 when club does not exist', async () => {
       const res = await request(app).get('/clubs/9999');
       expect(res.status).toBe(404);
-      expect(res.text).toContain('Club not found');
+      expect(res.body.error).toBe('Club not found');
     });
 
-    it('should fail to update non-existent club', async () => {
+    it('should return 404 when updating a non-existent club', async () => {
       const { agent } = await testHelper.loginUser('new@gmail.com', 'password123');
-      
       const res = await agent
         .post('/clubs/9999/update')
-        .send({
-          name: 'New Name',
-          stadium: 'New Stadium',
-          country: 'Spain'
-        });
-      
+        .send({ name: 'New Name', stadium: 'New Stadium', country: 'Spain' });
       expect(res.status).toBe(404);
-      expect(res.text).toContain('Club not found');
+      expect(res.body.error).toBe('Club not found');
     });
 
-    it('should fail to delete non-existent club', async () => {
+    it('should return 200 when deleting a non-existent club (idempotent)', async () => {
       const { agent } = await testHelper.loginUser('new@gmail.com', 'password123');
-      
       const res = await agent.post('/clubs/9999/delete');
-      
-      expect(res.status).toBe(302); // Deletes anyway and redirects
+      expect(res.status).toBe(200);
     });
   });
 
   describe('Player Routes - Error Scenarios', () => {
-    it('should fail to create player with validation errors', async () => {
+    it('should return 400 when creating a player with validation errors', async () => {
       const { agent } = await testHelper.loginUser('new@gmail.com', 'password123');
-      
       const res = await agent
         .post('/players')
-        .send({
-          firstName: '', // Empty first name
-          lastName: 'Test',
-          position: 'Attacker',
-          nationality: 'England',
-          clubId: 1,
-          dateOfBirth: '2001-09-05'
-        });
-      
+        .send({ firstName: '', lastName: 'Test', position: 'Attacker', nationality: 'England', clubId: 1, dateOfBirth: '2001-09-05' });
       expect(res.status).toBe(400);
     });
 
-    it('should fail to create player with non-existent club', async () => {
+    it('should return 400 when creating a player with a non-existent club', async () => {
       const { agent } = await testHelper.loginUser('new@gmail.com', 'password123');
-      
       const res = await agent
         .post('/players')
-        .send({
-          firstName: 'John',
-          lastName: 'Doe',
-          position: 'Midfielder',
-          nationality: 'France',
-          clubId: 9999,
-          dateOfBirth: '2001-09-05'
-        });
-      
+        .send({ firstName: 'John', lastName: 'Doe', position: 'Midfielder', nationality: 'France', clubId: 9999, dateOfBirth: '2001-09-05' });
       expect(res.status).toBe(400);
     });
 
-    it('should fail to update non-existent player', async () => {
+    it('should return 404 when updating a non-existent player', async () => {
       const { agent } = await testHelper.loginUser('new@gmail.com', 'password123');
-      
       const res = await agent
         .post('/players/9999/update')
-        .send({
-          firstName: 'John',
-          lastName: 'Doe',
-          position: 'Midfielder',
-          nationality: 'France',
-          clubId: 1,
-          dateOfBirth: '2001-09-05'
-        });
-      
+        .send({ firstName: 'John', lastName: 'Doe', position: 'Midfielder', nationality: 'France', clubId: 1, dateOfBirth: '2001-09-05' });
       expect(res.status).toBe(404);
     });
 
-    it('should fail to update player with non-existent club', async () => {
+    it('should return 400 when updating a player with a non-existent club', async () => {
       const { agent } = await testHelper.loginUser('new@gmail.com', 'password123');
-      
       const res = await agent
         .post('/players/1/update')
-        .send({
-          firstName: 'Bukayo',
-          lastName: 'Saka',
-          position: 'Attacker',
-          nationality: 'England',
-          clubId: 9999,
-          dateOfBirth: '2001-09-05'
-        });
-      
+        .send({ firstName: 'Bukayo', lastName: 'Saka', position: 'Attacker', nationality: 'England', clubId: 9999, dateOfBirth: '2001-09-05' });
       expect(res.status).toBe(400);
     });
   });
 
   describe('Global Error Handler', () => {
-    it('should have global error handler middleware', async () => {
-      // The error handler is passive - it catches unhandled errors
-      // Just verify the app loads successfully
+    it('should respond to the root route without crashing', async () => {
       const res = await request(app).get('/');
-      expect(res.status).toBe(302); // Redirects to /clubs
+      expect(res.status).toBe(302);
     });
   });
 
   describe('Auth Edge Cases', () => {
-    it('should handle missing password in login', async () => {
+    it('should return 401 when password is missing in login', async () => {
       const res = await request(app)
         .post('/auth/login')
-        .send({
-          email: 'new@gmail.com'
-          // password missing
-        });
-      
+        .send({ email: 'new@gmail.com' });
       expect(res.status).toBe(401);
     });
 
-    it('should handle non-existent user login', async () => {
+    it('should return 401 for non-existent user login', async () => {
       const res = await request(app)
         .post('/auth/login')
-        .send({
-          email: 'nonexistent@gmail.com',
-          password: 'password123'
-        });
-      
+        .send({ email: 'nonexistent@gmail.com', password: 'password123' });
       expect(res.status).toBe(401);
-      expect(res.text).toContain('Email or password is incorrect');
+      expect(res.body.errors[0].msg).toContain('Email or password is incorrect');
     });
   });
 });

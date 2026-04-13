@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node db/populateDB.js && node app.js",
-    "dev": "nodemon app.js",
+    "dev:api": "nodemon app.js",
+    "dev:client": "cd client && npm run dev",
     "test": "jest --globalSetup=./tests/setup.js --runInBand --detectOpenHandles",
     "test:watch": "jest --watchAll --globalSetup=./tests/setup.js --runInBand",
     "test:coverage": "jest --globalSetup=./tests/setup.js --coverage --runInBand --detectOpenHandles"
@@ -25,16 +26,18 @@
   "author": "Your Name",
   "license": "ISC",
   "dependencies": {
+    "@tailwindcss/vite": "^4.2.2",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
     "dotenv": "^17.3.1",
-    "ejs": "^5.0.1",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.3",
     "method-override": "^3.0.0",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
     "jest": "^30.3.0",
@@ -43,8 +46,13 @@
   },
   "jest": {
     "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/.claude/"
+    ],
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "/.claude/"
     ]
   }
 }
