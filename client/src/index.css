@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background-color: #0f172a; 
+  color: #FFFDD0;            
+}
+
+html, body {
+  height: 100%;
+}
+
+@layer components {
+  .nav-link {
+    @apply text-sm font-medium hover:text-blue-400 transition-colors;
+  }
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 transition-colors px-3 py-2 rounded text-white font-medium;
+  }
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 transition-colors px-3 py-2 rounded text-white font-medium;
+  }
+
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/60 flex items-center justify-center z-50;
+  }
+
+  .modal-box {
+    @apply bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 p-6; 
+  }
+
+  .modal-title {
+    @apply text-lg font-semibold mb-4;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-gray-300 mb-1;
+  }
+
+  .form-input {
+    @apply w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors;
+  }
+  .modal-actions {
+    @apply flex justify-end gap-4 mt-6;
+  }
+
+  .btn-secondary {
+    @apply hover:text-white transition-colors px-3 py-2 rounded text-gray-300 font-medium;
+  }
+  .page-header {
+    @apply text-3xl font-bold  mb-5;
+  }
+
+  .section-header {
+    @apply text-xl font-semibold mb-4 mt-10;
+  }
+
+  .search-bar {
+    @apply bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm  focus:outline-none focus:border-blue-500 transition-colors;
+  }
+
+  .list-item-link {
+    @apply block px-4 py-3 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer;
+  }
+
+  .error-text {
+    @apply text-red-600 text-sm;
+  }
+
+  .login-prompt {
+    @apply text-gray-400 text-sm mt-8;
+}
+
+  .login-link {
+    @apply text-blue-400 text-sm hover:underline;
+  }
+
+  .page-container {
+  @apply max-w-2xl mx-auto px-4 py-8;
+}
+
+.back-link {
+  @apply text-sm text-gray-400 hover:text-white transition-colors mb-4 inline-block;
+}
+.detail-subtitle {
+  @apply text-gray-400 text-sm mb-6;
+}
+
+}

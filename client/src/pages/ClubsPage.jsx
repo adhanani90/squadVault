@@ -57,24 +57,25 @@ export default function ClubsPage() {
   if (loading) return <p>Loading clubs…</p>;
 
   return (
-    <div>
-      <h1>Clubs</h1>
+    <div className='max-w-2xl mx-auto px-4 py-8'>
+      <h1 className='page-header'>Clubs</h1>
 
-      <div>
-        <input type="search" placeholder="Search by name…" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+      <div className='flex gap-3 mb-6'>
+        <input type="search" placeholder="Search by name…" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className='form-input flex-1' />
         {' '}
-        <input type="search" placeholder="Filter by country…" value={countryFilter} onChange={e => setCountryFilter(e.target.value)} />
+        <input className="form-input flex-1" type="search" placeholder="Filter by country…" value={countryFilter} onChange={e => setCountryFilter(e.target.value)} />
         {searching && <span> Searching…</span>}
       </div>
 
       {displayedClubs.length === 0 ? (
-        <p>No clubs found.</p>
+        <p className="text-gray-400 text-sm" >No clubs found.</p>
       ) : (
-        <ul>
+        <ul className='bg-gray-800 rounded-lg overflow-hidden divide-y divide-gray-700'>
           {displayedClubs.map(club => (
             <li key={club.id}>
-              <Link to={`/clubs/${club.id}`}>{club.name}</Link>
-              {' — '}{club.country} · {club.stadium}
+              <Link to={`/clubs/${club.id}`} className='list-item-link'>{club.name}
+              <span className='text-gray-400 text-sm ml-2'>{'— '}{club.country} · {club.stadium}</span>
+              </Link>
             </li>
           ))}
         </ul>
@@ -82,23 +83,23 @@ export default function ClubsPage() {
 
       {user ? (
         <section>
-          <h2>Add a Club</h2>
-          <ErrorList errors={errors} />
-          <form onSubmit={handleSubmit}>
+          <h2 className='section-header'>Add a Club</h2>
+          <ErrorList errors={errors} className="error-text" />
+          <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
             <div>
-              <label>Name<br /><input name="name" value={form.name} onChange={handleChange} required /></label>
+              <label className='form-label'>Name<br /><input name="name" className="form-input" value={form.name} onChange={handleChange} required /></label>
             </div>
             <div>
-              <label>Country<br /><input name="country" value={form.country} onChange={handleChange} required /></label>
+              <label className='form-label'>Country<br /><input className='form-input' name="country" value={form.country} onChange={handleChange} required /></label>
             </div>
             <div>
-              <label>Stadium<br /><input name="stadium" value={form.stadium} onChange={handleChange} required /></label>
+              <label className='form-label'>Stadium<br /><input className='form-input' name="stadium" value={form.stadium} onChange={handleChange} required /></label>
             </div>
-            <button type="submit" disabled={submitting}>{submitting ? 'Adding…' : 'Add Club'}</button>
+            <button className='btn-primary self-start' type="submit" disabled={submitting}>{submitting ? 'Adding…' : 'Add Club'}</button>
           </form>
         </section>
       ) : (
-        <p><Link to="/login">Log in</Link> to add a club.</p>
+        <p className='login-prompt'><Link to="/login" className='login-link'>Log in</Link> to add a club.</p>
       )}
     </div>
   );

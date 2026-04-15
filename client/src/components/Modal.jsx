@@ -3,12 +3,7 @@ export default function Modal({ open, onClose, title, children }) {
 
   return (
     <div
-      style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(0,0,0,0.5)',
-        zIndex: 200,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}
+      className="modal-overlay"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div style={{ background: '#fff', borderRadius: 8, padding: 24, minWidth: 360, maxWidth: 480, width: '100%' }}>

@@ -9,25 +9,30 @@ export default function NavBar() {
     await logout();
     navigate('/login');
   };
-
   return (
-    <nav>
-      <Link to="/clubs"><strong>SquadVault</strong></Link>
-      <Link to="/clubs">Clubs</Link>
-      <Link to="/players">Players</Link>
-      <span>
+    <nav className="bg-gray-900 text-white px-6 py-4 flex items-center justify-between">
+
+      <div className="flex items-center gap-6">
+        <Link to="/clubs" className="text-xl font-bold tracking-wide hover:text-blue-400 transition-colors">
+          SquadVault
+        </Link>
+        <Link to="/clubs" className="nav-link">Clubs</Link>
+        <Link to="/players" className="nav-link">Players</Link>
+      </div>
+
+      <div className="flex items-center gap-4">
         {user === undefined ? null : user ? (
           <>
-            <span>{user.email}</span>
-            <button onClick={handleLogout}>Logout</button>
+            <span className='text-gray-400 text-sm'>{user.email}</span>
+            <button onClick={handleLogout} className='btn-danger'>Logout</button>
           </>
         ) : (
           <>
-            <Link to="/login">Log in</Link>
-            <Link to="/signup">Sign up</Link>
+            <Link to="/login" className='nav-link'>Log in</Link>
+            <Link to="/signup" className='btn-primary'>Sign up</Link>
           </>
         )}
-      </span>
+      </div>
     </nav>
   );
 }

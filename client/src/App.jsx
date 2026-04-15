@@ -10,12 +10,12 @@ import TransferPage from './pages/TransferPage';
 
 function Layout() {
   return (
-    <>
+    <div className='min-h-screen'>
       <NavBar />
-      <main>
-        <Outlet />
+        <main className="max-w-7xl mx-auto px-4 py-8">
+          <Outlet />
       </main>
-    </>
+    </div>
   );
 }
 

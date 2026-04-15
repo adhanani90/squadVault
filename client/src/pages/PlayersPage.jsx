@@ -59,24 +59,27 @@ export default function PlayersPage() {
   if (loading) return <p>Loading players…</p>;
 
   return (
-    <div>
-      <h1>Players</h1>
+    <div className='max-w-2xl mx-auto px-4 py-8'>
+      <h1 className='page-header'>Players</h1>
 
-      <div>
-        <input type="search" placeholder="Search by name…" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+      <div className='flex gap-3 mb-6'>
+        <input className="form-input flex-1" type="search" placeholder="Search by name…" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
         {' '}
-        <input type="search" placeholder="Filter by nationality…" value={nationalityFilter} onChange={e => setNationalityFilter(e.target.value)} />
-        {searching && <span> Searching…</span>}
+        <input type="search" className="form-input flex-1" placeholder="Filter by nationality…" value={nationalityFilter} onChange={e => setNationalityFilter(e.target.value)} />
+        {searching && <span className='text-gray-400 text-sm self-center'> Searching…</span>}
       </div>
 
       {displayedPlayers.length === 0 ? (
-        <p>No players found.</p>
+        <p className='text-gray-400 text-sm'>No players found.</p>
       ) : (
-        <ul>
+        <ul className='bg-gray-800 rounded-lg divide-y divide-gray-700 overflow-hidden'>
           {displayedPlayers.map(p => (
             <li key={p.id}>
-              <Link to={`/players/${p.id}`}>{p.first_name} {p.last_name}</Link>
-              {' — '}{p.position} · {p.nationality} · {p.club_name ?? 'No club'}
+              <Link to={`/players/${p.id}`} className='list-item-link'>{p.first_name} {p.last_name}
+              <span className="text-gray-400 text-sm ml-2">
+                {' — '}{p.position} · {p.nationality} · {p.club_name ?? 'No club'}
+                </span>
+              </Link>
             </li>
           ))}
         </ul>
@@ -84,42 +87,42 @@ export default function PlayersPage() {
 
       {user ? (
         <section>
-          <h2>Add a Player</h2>
-          <ErrorList errors={errors} />
-          <form onSubmit={handleSubmit}>
+          <h2 className='section-header'>Add a Player</h2>
+          <ErrorList errors={errors} className='error-text'/>
+          <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
             <div>
-              <label>First Name<br /><input name="firstName" value={form.firstName} onChange={handleChange} required /></label>
+              <label className="form-label">First Name<br /><input className="form-input" name="firstName" value={form.firstName} onChange={handleChange} required /></label>
             </div>
             <div>
-              <label>Last Name<br /><input name="lastName" value={form.lastName} onChange={handleChange} required /></label>
+              <label className="form-label">Last Name<br /><input name="lastName" className="form-input" value={form.lastName} onChange={handleChange} required /></label>
             </div>
             <div>
-              <label>Nationality<br /><input name="nationality" value={form.nationality} onChange={handleChange} required /></label>
+              <label className="form-label">Nationality<br /><input name="nationality" className="form-input" value={form.nationality} onChange={handleChange} required /></label>
             </div>
             <div>
-              <label>Position<br />
-                <select name="position" value={form.position} onChange={handleChange} required>
+              <label className="form-label">Position<br />
+                <select className="form-input" name="position" value={form.position} onChange={handleChange} required>
                   <option value="">— Select a position —</option>
                   {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
               </label>
             </div>
             <div>
-              <label>Date of Birth<br /><input name="dateOfBirth" type="date" value={form.dateOfBirth} onChange={handleChange} required /></label>
+              <label className="form-label">Date of Birth<br /><input name="dateOfBirth" type="date" value={form.dateOfBirth} onChange={handleChange} required className="form-input" /></label>
             </div>
             <div>
-              <label>Club<br />
-                <select name="clubId" value={form.clubId} onChange={handleChange} required>
+              <label className="form-label">Club<br />
+                <select name="clubId" value={form.clubId} onChange={handleChange} required className="form-input">
                   <option value="">— Select a club —</option>
                   {clubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </label>
             </div>
-            <button type="submit" disabled={submitting}>{submitting ? 'Adding…' : 'Add Player'}</button>
+            <button className="btn-primary self-start" type="submit" disabled={submitting}>{submitting ? 'Adding…' : 'Add Player'}</button>
           </form>
         </section>
       ) : (
-        <p><Link to="/login">Log in</Link> to add a player.</p>
+        <p className='login-prompt'><Link to="/login" className='login-link'>Log in</Link> to add a player.</p>
       )}
     </div>
   );
