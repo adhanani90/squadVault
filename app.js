@@ -42,7 +42,7 @@ app.use('/clubs', indexRouter);    // All routes in indexRouter now start with /
 app.use('/players', playerRouter);
 
 // Catch-all: serve React app for any non-API route (supports client-side routing)
-app.get('*', (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
