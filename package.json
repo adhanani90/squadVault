@@ -9,6 +9,7 @@
     "dev:client": "cd client && npm run dev",
     "test": "jest --globalSetup=./tests/setup.js --runInBand --detectOpenHandles",
     "test:watch": "jest --watchAll --globalSetup=./tests/setup.js --runInBand",
+    "build": "vite build",
     "test:coverage": "jest --globalSetup=./tests/setup.js --coverage --runInBand --detectOpenHandles"
   },
   "repository": {
