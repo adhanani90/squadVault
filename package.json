@@ -27,6 +27,9 @@
   ],
   "author": "Your Name",
   "license": "ISC",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
     "bcrypt": "^6.0.0",
