@@ -104,34 +104,35 @@ export default function PlayerDetailPage() {
   if (!player) return <p>Player not found.</p>;
 
   return (
-    <div>
-      <p><Link to="/players">← Back to Players</Link></p>
+    <div className='page-container'>
 
-      <h1>{player.first_name} {player.last_name}</h1>
-      <p>{player.position} · {player.nationality}</p>
-      <p>Date of birth: {player.date_of_birth ? formatDate(player.date_of_birth) : '—'}</p>
-      <p>Current club: {player.club_name ?? 'None'}</p>
+      <p><Link to="/players" className='back-link'>← Back to Players</Link></p>
+
+      <h1 className='page-header'>{player.first_name} {player.last_name}</h1>
+      <p className='detail-subtitle'>{player.position} · {player.nationality}</p>
+      <p className='detail-subtitle'>Date of birth: {player.date_of_birth ? formatDate(player.date_of_birth) : '—'}</p>
+      <p className='detail-subtitle'>Current club: {player.club_name ?? 'None'}</p>
 
       {user && (
-        <div>
-          <button onClick={() => setEditOpen(true)}>Edit Player</button>
+        <div className="flex gap-3 mt-4 mb-6">
+          <button onClick={() => setEditOpen(true)} className='btn-primary'>Edit Player</button>
+          
+          <Link to={`/players/${id}/transfer`} className='btn-primary'>Record a Transfer</Link>
           {' '}
-          <Link to={`/players/${id}/transfer`}>Record a Transfer</Link>
-          {' '}
-          <button onClick={handleDelete} disabled={deleting}>
+          <button onClick={handleDelete} disabled={deleting} className='btn-danger'>
             {deleting ? 'Deleting…' : 'Delete Player'}
           </button>
         </div>
       )}
       {!user && (
-        <p><Link to="/login">Log in</Link> to record a transfer.</p>
+        <p className='login-prompt'><Link to="/login" className='login-link'>Log in</Link> to record a transfer.</p>
       )}
 
-      <h2>Transfer History</h2>
+      <h2 className='section-header'>Transfer History</h2>
       {transfers.length === 0 ? (
-        <p>No transfers on record.</p>
+        <p className='text-gray-400 text-sm'>No transfers on record.</p>
       ) : (
-        <table>
+        <table className="table">
           <thead>
             <tr>
               <th>Date</th><th>From</th><th>To</th><th>Fee</th>
@@ -152,39 +153,39 @@ export default function PlayerDetailPage() {
 
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit Player">
         <ErrorList errors={editErrors} />
-        <form onSubmit={handleEditSubmit}>
+        <form onSubmit={handleEditSubmit} className="flex flex-col gap-4">
           <div>
-            <label>First Name<br /><input name="firstName" value={editForm.firstName} onChange={handleEditChange} required /></label>
+            <label className="form-label">First Name<br /><input className="form-input" name="firstName" value={editForm.firstName} onChange={handleEditChange} required /></label>
           </div>
           <div>
-            <label>Last Name<br /><input name="lastName" value={editForm.lastName} onChange={handleEditChange} required /></label>
+            <label className="form-label">Last Name<br /><input className="form-input" name="lastName" value={editForm.lastName} onChange={handleEditChange} required /></label>
           </div>
           <div>
-            <label>Nationality<br /><input name="nationality" value={editForm.nationality} onChange={handleEditChange} required /></label>
+            <label className="form-label">Nationality<br /><input className="form-input" name="nationality" value={editForm.nationality} onChange={handleEditChange} required /></label>
           </div>
           <div>
-            <label>Position<br />
-              <select name="position" value={editForm.position} onChange={handleEditChange} required>
+            <label className="form-label">Position<br />
+              <select name="position" value={editForm.position} onChange={handleEditChange} required className="form-input">
                 <option value="">— Select —</option>
                 {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
             </label>
           </div>
           <div>
-            <label>Date of Birth<br /><input name="dateOfBirth" type="date" value={editForm.dateOfBirth} onChange={handleEditChange} required /></label>
+            <label className="form-label">Date of Birth<br /><input name="dateOfBirth" type="date" value={editForm.dateOfBirth} onChange={handleEditChange} required className="form-input"/></label>
           </div>
           <div>
-            <label>Club<br />
-              <select name="clubId" value={editForm.clubId} onChange={handleEditChange} required>
+            <label className="form-label">Club<br />
+              <select name="clubId" value={editForm.clubId} onChange={handleEditChange} required className="form-input">
                 <option value="">— Select a club —</option>
                 {clubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </label>
           </div>
-          <div style={{ marginTop: 16 }}>
-            <button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save Changes'}</button>
+          <div className="modal-actions">
+            <button className="btn-primary" type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save Changes'}</button>
             {' '}
-            <button type="button" onClick={() => setEditOpen(false)}>Cancel</button>
+            <button className="btn-secondary" type="button" onClick={() => setEditOpen(false)}>Cancel</button>
           </div>
         </form>
       </Modal>

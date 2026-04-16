@@ -59,7 +59,7 @@ export default function PlayersPage() {
   if (loading) return <p>Loading players…</p>;
 
   return (
-    <div className='max-w-2xl mx-auto px-4 py-8'>
+    <div className='page-container'>
       <h1 className='page-header'>Players</h1>
 
       <div className='flex gap-3 mb-6'>
@@ -72,7 +72,7 @@ export default function PlayersPage() {
       {displayedPlayers.length === 0 ? (
         <p className='text-gray-400 text-sm'>No players found.</p>
       ) : (
-        <ul className='bg-gray-800 rounded-lg divide-y divide-gray-700 overflow-hidden'>
+        <ul className='list-container'>
           {displayedPlayers.map(p => (
             <li key={p.id}>
               <Link to={`/players/${p.id}`} className='list-item-link'>{p.first_name} {p.last_name}

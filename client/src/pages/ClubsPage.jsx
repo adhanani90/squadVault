@@ -57,7 +57,7 @@ export default function ClubsPage() {
   if (loading) return <p>Loading clubs…</p>;
 
   return (
-    <div className='max-w-2xl mx-auto px-4 py-8'>
+    <div className='page-container'>
       <h1 className='page-header'>Clubs</h1>
 
       <div className='flex gap-3 mb-6'>
@@ -70,7 +70,7 @@ export default function ClubsPage() {
       {displayedClubs.length === 0 ? (
         <p className="text-gray-400 text-sm" >No clubs found.</p>
       ) : (
-        <ul className='bg-gray-800 rounded-lg overflow-hidden divide-y divide-gray-700'>
+        <ul className='list-container'>
           {displayedClubs.map(club => (
             <li key={club.id}>
               <Link to={`/clubs/${club.id}`} className='list-item-link'>{club.name}

@@ -50,46 +50,48 @@ export default function TransferPage() {
 
   if (loading) return <p>Loading…</p>;
 
-  if (!user) return <p><Link to="/login">Log in</Link> to record a transfer.</p>;
+  if (!user) return <p className='login-prompt'><Link className='login-link' to="/login">Log in</Link> to record a transfer.</p>;
 
   return (
-    <div>
-      <p><Link to={`/players/${id}`}>← Back to Player</Link></p>
+    <div className='page-container'>
+      <p ><Link to={`/players/${id}`} className='back-link'>← Back to Player</Link></p>
 
-      <h1>Record Transfer{player ? ` — ${player.first_name} ${player.last_name}` : ''}</h1>
+      <h1 className='page-header'>Record Transfer{player ? ` — ${player.first_name} ${player.last_name}` : ''}</h1>
 
-      <ErrorList errors={errors} />
+      <ErrorList errors={errors} className='error-text'/>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <div>
-          <label>From Club<br />
-            <select name="fromClubId" value={form.fromClubId} onChange={handleChange} required>
+          <label className='form-label'>From Club<br />
+            <select name="fromClubId" value={form.fromClubId} onChange={handleChange} required className='form-input'>
               <option value="">— Select source club —</option>
               {clubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </label>
         </div>
         <div>
-          <label>To Club<br />
-            <select name="toClubId" value={form.toClubId} onChange={handleChange} required>
+          <label className='form-label'>To Club<br />
+            <select name="toClubId" value={form.toClubId} onChange={handleChange} required className='form-input'>
               <option value="">— Select destination club —</option>
               {clubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </label>
         </div>
         <div>
-          <label>Fee (£)<br />
-            <input name="amount" type="number" min="0" step="0.01" placeholder="0 for free transfer" value={form.amount} onChange={handleChange} required />
+          <label className='form-label'>Fee (£)<br />
+            <input className='form-input' name="amount" type="number" min="0" step="0.01" placeholder="0 for free transfer" value={form.amount} onChange={handleChange} required />
           </label>
         </div>
         <div>
-          <label>Date<br />
-            <input name="date" type="date" value={form.date} onChange={handleChange} />
+          <label className='form-label'>Date<br />
+            <input name="date" type="date" value={form.date} onChange={handleChange} className='form-input'/>
           </label>
         </div>
-        <button type="submit" disabled={submitting}>{submitting ? 'Saving…' : 'Record Transfer'}</button>
+        <div className="flex gap-3">
+          <button className='btn-primary' type="submit" disabled={submitting}>{submitting ? 'Saving…' : 'Record Transfer'}</button>
+              <Link to={`/players/${id}`} className="btn-secondary ">Cancel</Link>
+        </div>
         {' '}
-        <Link to={`/players/${id}`}>Cancel</Link>
       </form>
     </div>
   );

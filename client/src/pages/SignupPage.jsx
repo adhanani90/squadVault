@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import ErrorList from '../components/ErrorList';
+
 
 export default function SignupPage() {
   const { signup } = useAuth();
@@ -27,43 +29,40 @@ export default function SignupPage() {
   };
 
   return (
-    <div>
-      <h1>SquadVault</h1>
-      <h2>Create an account</h2>
+    <div className='page-container'>
+      <h1 className="page-header">SquadVault</h1>
+      <h2 className="section-header">Sign Up</h2>
 
-      {errors.length > 0 && (
-        <ul>
-          {errors.map((e, i) => <li key={i}>{e.msg}</li>)}
-        </ul>
-      )}
 
-      <form onSubmit={handleSubmit}>
-        <label>
+      <ErrorList errors={errors}/>
+
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+        <label className='form-label'>
           Email
-          <input type="email" name="email" value={form.email} onChange={handleChange} required />
+          <input className='form-input' type="email" name="email" value={form.email} onChange={handleChange} required />
         </label>
-        <label>
+        <label className='form-label'>
           Password
-          <input type="password" name="password" value={form.password} onChange={handleChange} required />
+          <input className='form-input' type="password" name="password" value={form.password} onChange={handleChange} required />
         </label>
-        <label>
+        <label className='form-label'>
           Confirm Password
-          <input type="password" name="confirmPassword" value={form.confirmPassword} onChange={handleChange} required />
+          <input className='form-input' type="password" name="confirmPassword" value={form.confirmPassword} onChange={handleChange} required />
         </label>
-        <label>
+        <label className='form-label'>
           Age
-          <input type="number" name="age" value={form.age} onChange={handleChange} min="18" max="120" required />
+          <input className='form-input' type="number" name="age" value={form.age} onChange={handleChange} min="18" max="120" required />
         </label>
-        <label>
+        <label className='form-label'>
           Bio
-          <textarea name="bio" value={form.bio} onChange={handleChange} required />
+          <textarea rows={4} className='form-input' name="bio" value={form.bio} onChange={handleChange} required />
         </label>
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} className='btn-primary'>
           {loading ? 'Creating account…' : 'Sign up'}
         </button>
       </form>
 
-      <p>Already have an account? <Link to="/login">Log in</Link></p>
+      <p className='login-prompt'>Already have an account? <Link to="/login" className="login-link">Log in</Link></p>
     </div>
   );
 }

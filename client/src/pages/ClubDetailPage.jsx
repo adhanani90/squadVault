@@ -70,55 +70,55 @@ export default function ClubDetailPage() {
   if (!club)   return <p>Club not found.</p>;
 
   return (
-    <div>
-      <p><Link to="/clubs">← Back to Clubs</Link></p>
+    <div className='page-container'>
+      <p><Link className='back-link' to="/clubs">← Back to Clubs</Link></p>
 
-      <h1>{club.name}</h1>
-      <p>{club.country} · {club.stadium}</p>
+      <h1 className='page-header'>{club.name}</h1>
+      <p className='detail-subtitle'>{club.country} · {club.stadium}</p>
 
       {user && (
         <div>
-          <button onClick={() => setEditOpen(true)}>Edit Club</button>
+          <button onClick={() => setEditOpen(true)} className='btn-primary'>Edit Club</button>
           {' '}
-          <button onClick={handleDelete} disabled={deleting}>
+          <button onClick={handleDelete} disabled={deleting} className='btn-danger'>
             {deleting ? 'Deleting…' : 'Delete Club'}
           </button>
         </div>
       )}
 
-      <h2>Players</h2>
+      <h2 className='section-header'>Players</h2>
       {players.length === 0 ? (
-        <p>No players registered for this club.</p>
+        <p className='text-gray-400 text-sm'>No players registered for this club.</p>
       ) : (
-        <ul>
+        <ul className='list-container'>
           {players.map(p => (
             <li key={p.id}>
-              <Link to={`/players/${p.id}`}>{p.first_name} {p.last_name}</Link>
-              {' — '}{p.position} · {p.nationality}
+              <Link to={`/players/${p.id}`} className='list-item-link'>{p.first_name} {p.last_name}
+              <span className='text-gray-400 text-sm ml-2'>  
+                  {' — '}{p.position} · {p.nationality}
+                </span> 
+              </Link>
             </li>
           ))}
         </ul>
       )}
 
-      <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit Club">
-        <ErrorList errors={editErrors} />
-        <form onSubmit={handleEditSubmit}>
-          <div>
-            <label>Name<br /><input name="name" value={editForm.name} onChange={handleEditChange} required /></label>
-          </div>
-          <div>
-            <label>Country<br /><input name="country" value={editForm.country} onChange={handleEditChange} required /></label>
-          </div>
-          <div>
-            <label>Stadium<br /><input name="stadium" value={editForm.stadium} onChange={handleEditChange} required /></label>
-          </div>
-          <div style={{ marginTop: 16 }}>
-            <button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save Changes'}</button>
-            {' '}
-            <button type="button" onClick={() => setEditOpen(false)}>Cancel</button>
-          </div>
-        </form>
-      </Modal>
+    <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit Club" >
+      <ErrorList errors={editErrors} />
+      <form onSubmit={handleEditSubmit} className="flex flex-col gap-4">
+        <div>
+          <label className="form-label">Name<br /><input className="form-input" name="name" value={editForm.name} onChange={handleEditChange} required /></label>
+        </div>
+        <div><label className="form-label">Country<br /><input className="form-input" name="country" value={editForm.country} onChange={handleEditChange} required /></label>
+        </div>
+        <div><label className="form-label">Stadium<br /><input className="form-input" name="stadium" value={editForm.stadium} onChange={handleEditChange} required /></label>
+        </div>
+        <div className="modal-actions">
+          <button type="button" onClick={() => setEditOpen(false)} className="btn-secondary">Cancel</button>
+          <button type="submit" disabled={saving} className="btn-primary">{saving ? 'Saving…' : 'Save Changes'}</button>
+        </div>
+      </form>
+    </Modal>
     </div>
   );
 }

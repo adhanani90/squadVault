@@ -36,3 +36,5 @@ export default function App() {
     </Routes>
   );
 }
+
+// TODO: Add CSS to PlayersDetailPage, LoginPage, SignupPage and 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import ErrorList from '../components/ErrorList';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -27,31 +28,27 @@ export default function LoginPage() {
   };
 
   return (
-    <div>
-      <h1>SquadVault</h1>
-      <h2>Log in</h2>
+    <div className='page-container'>
+      <h1 className="page-header">SquadVault</h1>
+      <h2 className="section-header">Log in</h2>
 
-      {errors.length > 0 && (
-        <ul>
-          {errors.map((e, i) => <li key={i}>{e.msg}</li>)}
-        </ul>
-      )}
+      <ErrorList errors={errors} />
 
-      <form onSubmit={handleSubmit}>
-        <label>
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+        <label className='form-label'>
           Email
-          <input type="email" name="email" value={form.email} onChange={handleChange} required />
+          <input className='form-input' type="email" name="email" value={form.email} onChange={handleChange} required />
         </label>
-        <label>
+        <label className='form-label'>
           Password
-          <input type="password" name="password" value={form.password} onChange={handleChange} required />
+          <input className='form-input' type="password" name="password" value={form.password} onChange={handleChange} required />
         </label>
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} className='btn-primary'>
           {loading ? 'Logging in…' : 'Log in'}
         </button>
       </form>
 
-      <p>No account? <Link to="/signup">Sign up</Link></p>
+      <p className='login-prompt'>No account? <Link to="/signup" className='login-link'>Sign up</Link></p>
     </div>
   );
 }
