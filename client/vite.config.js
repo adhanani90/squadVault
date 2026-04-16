@@ -3,6 +3,10 @@ import react from '@vitejs/plugin-react';
 import tailwind from '@tailwindcss/vite'
 
 export default defineConfig({
+  root: 'client',
+  build: {
+    outDir: '../dist'
+  },
   plugins: [
     react(),
     tailwind(),
