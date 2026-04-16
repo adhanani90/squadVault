@@ -4,12 +4,13 @@
   "description": "A comprehensive football club and player management vault built with Express and PostgreSQL.",
   "main": "app.js",
   "scripts": {
-    "start": "node db/populateDB.js && node app.js",
+    "start": "node app.js",
+    "db:seed": "node db/populateDB.js",
     "dev:api": "nodemon app.js",
     "dev:client": "cd client && npm run dev",
     "test": "jest --globalSetup=./tests/setup.js --runInBand --detectOpenHandles",
     "test:watch": "jest --watchAll --globalSetup=./tests/setup.js --runInBand",
-    "build": "cd client && npm install && vite build --outDir ../dist",
+    "build": "npm install --prefix client && npm run build --prefix client",
     "test:coverage": "jest --globalSetup=./tests/setup.js --coverage --runInBand --detectOpenHandles"
   },
   "repository": {

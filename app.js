@@ -16,8 +16,8 @@ app.use(cors({
   credentials: true
 }));
 
-const assetsPath = path.join(__dirname, "public");
-app.use(express.static(assetsPath));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "dist")));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -40,7 +40,11 @@ app.use((req, res, next) => {
 app.use('/auth', authRouter);
 app.use('/clubs', indexRouter);    // All routes in indexRouter now start with /clubs
 app.use('/players', playerRouter);
-app.get('/', (req, res) => res.redirect('/clubs'));
+
+// Catch-all: serve React app for any non-API route (supports client-side routing)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 
 const PORT = process.env.PORT || 3000;
 
