@@ -4,7 +4,6 @@ const request = require('supertest');
 const app = require('../app');
 const pool = require('../db/pool');
 const testHelper = require('./testHelper');
-const populateDB = require('../db/populateDB');
 
 describe('Error Handling & Edge Cases', () => {
   afterAll(async () => {
@@ -12,7 +11,7 @@ describe('Error Handling & Edge Cases', () => {
   });
 
   afterEach(async () => {
-    await populateDB();
+    await testHelper.resetDB();
   });
 
   describe('Auth Middleware - Invalid JWT', () => {

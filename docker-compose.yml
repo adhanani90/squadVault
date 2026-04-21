@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:18.3
+    container_name: squadvault-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: squadvault
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s 
+      retries: 5
+      start_period: 10s
+    
+  app:
+    build: .
+    container_name: squadvault-app
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_USER: postgres
+      DB_NAME: squadvault
+      DB_PASSWORD: postgres
+      DB_PORT: 5432
+      JWT_SECRET: GBfChCMY8MB7wnymkWhtoD3cRlA1CC5e6iWSBmnuaSg
+      NODE_ENV: development
+  
+  seeder:
+    build: .
+    container_name: squadvault-seeder
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_USER: postgres
+      DB_NAME: squadvault
+      DB_PASSWORD: postgres
+      DB_PORT: 5432
+      JWT_SECRET: GBfChCMY8MB7wnymkWhtoD3cRlA1CC5e6iWSBmnuaSg
+      NODE_ENV: development
+    command: sh -c "node db/clearDB && node db/populateDB"

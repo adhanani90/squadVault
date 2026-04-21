@@ -41,9 +41,16 @@ app.use('/auth', authRouter);
 app.use('/clubs', indexRouter);    // All routes in indexRouter now start with /clubs
 app.use('/players', playerRouter);
 
+app.get('/', (req, res) => res.redirect('/clubs'));
+
+
 // Catch-all: serve React app for any non-API route (supports client-side routing)
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+// Catch-all: serve React SPA for client-side routes when built
+app.use((req, res, next) => {
+  const distIndex = path.join(__dirname, 'dist', 'index.html');
+  res.sendFile(distIndex, (err) => {
+    if (err) next(); // dist not built yet — fall through gracefully
+  });
 });
 
 const PORT = process.env.PORT || 3000;

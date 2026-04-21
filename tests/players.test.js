@@ -1,12 +1,11 @@
 // players.test.js
 
-jest.setTimeout(30000); // populateDB reseeds are slow under load
+jest.setTimeout(30000); 
 
 const request = require('supertest');
 const app = require('../app');
 const pool = require('../db/pool');
 const testHelper = require('./testHelper');
-const populateDB = require('../db/populateDB');
 const db = require('../db/queries');
 
 describe('Players Routes', () => {
@@ -46,7 +45,7 @@ describe('Players Routes', () => {
 
   describe('POST /players', () => {
     afterEach(async () => {
-      await populateDB();
+      await testHelper.resetDB();
     });
 
     it('should return 401 with no auth', async () => {
@@ -76,7 +75,7 @@ describe('Players Routes', () => {
 
   describe('POST /players/:playerId/update', () => {
     afterEach(async () => {
-      await populateDB();
+      await testHelper.resetDB();
     });
 
     it('should return 401 with no auth', async () => {
@@ -150,7 +149,7 @@ describe('Players Routes', () => {
 
   describe('POST /players/:playerId/transfer', () => {
     afterEach(async () => {
-      await populateDB();
+      await testHelper.resetDB();
     });
 
     it('should return 401 when unauthenticated', async () => {
@@ -222,7 +221,7 @@ describe('Players Routes', () => {
 
   describe('POST /players/:playerId/delete', () => {
     afterEach(async () => {
-      await populateDB();
+      await testHelper.resetDB();
     });
 
     it('should return 401 with no auth', async () => {

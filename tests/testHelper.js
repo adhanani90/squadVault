@@ -3,6 +3,9 @@ const request = require('supertest');
 const app = require('../app');
 const db = require('../db/queries'); 
 
+const clearDB = require('../db/clearDB')
+const populateDB = require('../db/populateDB')
+
 
 async function loginUser(email, password) {
   const agent = request.agent(app);
@@ -62,6 +65,11 @@ function expectValidationError(res, expectedText) {
     }
 }
 
+async function resetDB() {
+  await clearDB();
+  await populateDB();
+}
+
 module.exports = {
   loginUser,
   signupUser,
@@ -70,5 +78,6 @@ module.exports = {
   createPlayerApi,
   transferPlayerApi,
   deleteTestUser,
-  expectValidationError
+  expectValidationError,
+  resetDB
 };

@@ -3,14 +3,10 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 const SCHEMA_SQL = `
--- 1. Cleanup (order matters: transfers references players and clubs)
-DROP TABLE IF EXISTS transfers;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS players;
-DROP TABLE IF EXISTS clubs;
-DROP TYPE IF EXISTS positions;
 
--- 2. Create Clubs Table
+-- Seperated and removed the dropping tables to seperate concerns
+
+-- 1. Create Clubs Table
 CREATE TABLE IF NOT EXISTS clubs (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name VARCHAR ( 255 ) NOT NULL UNIQUE,
@@ -18,14 +14,14 @@ CREATE TABLE IF NOT EXISTS clubs (
   stadium VARCHAR ( 255 ) NOT NULL
 );
 
--- 3. Create Custom Enum Type
+-- 2. Create Custom Enum Type
 DO $$ BEGIN
     CREATE TYPE positions AS ENUM ('Goalkeeper', 'Defender', 'Midfielder', 'Attacker');
 EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
 
--- 4. Create Players Table
+-- 3. Create Players Table
 CREATE TABLE IF NOT EXISTS players (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   first_name VARCHAR ( 255 ) NOT NULL,
@@ -34,10 +30,12 @@ CREATE TABLE IF NOT EXISTS players (
   position positions NOT NULL,
   date_of_birth DATE NOT NULL,
   club_id INTEGER,
-  CONSTRAINT fk_players_club FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE SET NULL
+  CONSTRAINT fk_players_club FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE SET NULL,
+  CONSTRAINT uq_players_name_dob UNIQUE (first_name, last_name, date_of_birth)
+
 );
 
--- 5. Create Transfers Table
+-- 4. Create Transfers Table
 CREATE TABLE IF NOT EXISTS transfers (
   id             INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   player_id      INTEGER NOT NULL,
@@ -47,13 +45,14 @@ CREATE TABLE IF NOT EXISTS transfers (
   amount         NUMERIC(15, 2) NOT NULL DEFAULT 0,
   CONSTRAINT fk_transfers_player FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE,
   CONSTRAINT fk_transfers_from   FOREIGN KEY (from_club_id) REFERENCES clubs(id) ON DELETE SET NULL,
-  CONSTRAINT fk_transfers_to     FOREIGN KEY (to_club_id) REFERENCES clubs(id) ON DELETE SET NULL
+  CONSTRAINT fk_transfers_to     FOREIGN KEY (to_club_id) REFERENCES clubs(id) ON DELETE SET NULL,
+  CONSTRAINT unique_transfers UNIQUE (player_id, from_club_id, to_club_id, transferred_at)
 );
 
 CREATE INDEX IF NOT EXISTS idx_transfers_player_id     ON transfers(player_id);
 CREATE INDEX IF NOT EXISTS idx_transfers_transferred_at ON transfers(transferred_at DESC);
 
--- 6. Create User Table
+-- 5. Create User Table
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   email VARCHAR ( 255 ) NOT NULL UNIQUE,
@@ -62,7 +61,7 @@ CREATE TABLE IF NOT EXISTS users (
   bio VARCHAR ( 255 ) NOT NULL
 );
 
--- 7. Seed Clubs
+-- 6. Seed Clubs
 INSERT INTO clubs (name, country, stadium)
 VALUES
   ('Arsenal', 'England', 'Emirates Stadium'),
@@ -73,7 +72,7 @@ VALUES
   ('Southampton', 'England', 'St. Mary''s Stadium')
 ON CONFLICT (name) DO NOTHING;
 
--- 8. Seed Players
+-- 7. Seed Players
 INSERT INTO players (first_name, last_name, nationality, position, date_of_birth, club_id)
 VALUES
   ('Bukayo', 'Saka', 'England', 'Attacker', '2001-09-05', (SELECT id FROM clubs WHERE name = 'Arsenal')),
@@ -84,9 +83,9 @@ VALUES
   ('Virgil', 'van Dijk', 'Netherlands', 'Defender', '1991-07-08', (SELECT id FROM clubs WHERE name = 'Liverpool')),
   ('Cole', 'Palmer', 'England', 'Midfielder', '2002-05-06', (SELECT id FROM clubs WHERE name = 'Chelsea')),
   ('Reece', 'James', 'England', 'Defender', '1999-12-08', (SELECT id FROM clubs WHERE name = 'Chelsea'))
-ON CONFLICT DO NOTHING;
+  ON CONFLICT (first_name, last_name, date_of_birth) DO NOTHING;
 
--- 9. Seed Transfers
+-- 8. Seed Transfers
 INSERT INTO transfers (player_id, from_club_id, to_club_id, transferred_at, amount)
 VALUES
   (
@@ -102,7 +101,8 @@ VALUES
     (SELECT id FROM clubs   WHERE name = 'Liverpool'),
     '2018-01-01',
     84650000.00
-  );
+  )
+  ON CONFLICT (player_id, from_club_id, to_club_id,  transferred_at) DO NOTHING;
 `;
 
 async function main() {

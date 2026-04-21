@@ -1,5 +1,5 @@
 // tests/setup.test.js
-const populateDB = require('../db/populateDB');
+const {resetDB} = require('./testHelper')
 
 // 1. Delete test users/clubs/players you create
 // 2. (optional) Additional cleanup
@@ -8,7 +8,7 @@ const populateDB = require('../db/populateDB');
 module.exports = async () => {
   console.log('\n--- Global Setup: Seeding Test Database ---');
   try {
-    await populateDB();
+    await resetDB();
     console.log('--- Database Ready ---\n');
   } catch (err) {
     console.error('Failed to seed database:', err);

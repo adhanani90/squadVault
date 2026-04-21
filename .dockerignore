@@ -1,0 +1,12 @@
+node_modules/
+.env
+dist/
+.claude/
+.github/
+tests/
+Dockerfile
+docker-compose.yml
+README.md
+coverage/
+railway.toml
+client/node_modules/

@@ -11,6 +11,8 @@
     "test": "jest --globalSetup=./tests/setup.js --runInBand --detectOpenHandles",
     "test:watch": "jest --watchAll --globalSetup=./tests/setup.js --runInBand",
     "build": "npm install --prefix client && npm run build --prefix client",
+    "db:clear" : "node db/clearDB.js",
+    "db:reset" : "node db/clearDB && node db/populateDB.js",
     "test:coverage": "jest --globalSetup=./tests/setup.js --coverage --runInBand --detectOpenHandles"
   },
   "repository": {

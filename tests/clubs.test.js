@@ -4,7 +4,7 @@ const request = require('supertest');
 const app = require('../app');
 const db = require('../db/queries');
 const testHelper = require('./testHelper');
-const populateDB = require('../db/populateDB');
+ 
 
 describe('Clubs Routes', () => {
   const seededUser = {
@@ -13,7 +13,7 @@ describe('Clubs Routes', () => {
   };
 
   afterEach(async () => {
-    await populateDB();
+    await testHelper.resetDB();
   });
 
   describe('GET /clubs', () => {
