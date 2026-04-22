@@ -34,6 +34,7 @@ Live demo: https://squadvault-production.up.railway.app/
    DATABASE_URL=postgresql://user:password@host:port/dbname
    JWT_SECRET=your_jwt_secret
    NODE_ENV=development
+   FOOTBALL_ORG_API=your_football_org_api_key. note: this is a free api key that needs to be generated from https://www.football-data.org
 ```
 
 3. Start the server:

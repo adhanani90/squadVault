@@ -34,6 +34,7 @@ services:
       DB_PASSWORD: postgres
       DB_PORT: 5432
       JWT_SECRET: GBfChCMY8MB7wnymkWhtoD3cRlA1CC5e6iWSBmnuaSg
+      FOOTBALL_ORG_API: b589a12e418b4eed888133e60012e64b
       NODE_ENV: development
   
   seeder:
@@ -52,4 +53,5 @@ services:
       DB_PORT: 5432
       JWT_SECRET: GBfChCMY8MB7wnymkWhtoD3cRlA1CC5e6iWSBmnuaSg
       NODE_ENV: development
-    command: sh -c "node db/clearDB && node db/populateDB"
+      FOOTBALL_ORG_API: b589a12e418b4eed888133e60012e64b
+    command: sh -c "node db/clearDBjs && node db/populateDBjs"

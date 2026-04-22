@@ -6,7 +6,7 @@ const SCHEMA_SQL = `
 
 -- Seperated and removed the dropping tables to seperate concerns
 
--- 1. Create Clubs Table
+--. Create Clubs Table
 CREATE TABLE IF NOT EXISTS clubs (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name VARCHAR ( 255 ) NOT NULL UNIQUE,
@@ -14,14 +14,14 @@ CREATE TABLE IF NOT EXISTS clubs (
   stadium VARCHAR ( 255 ) NOT NULL
 );
 
--- 2. Create Custom Enum Type
+--  Create Custom Enum Type
 DO $$ BEGIN
     CREATE TYPE positions AS ENUM ('Goalkeeper', 'Defender', 'Midfielder', 'Attacker');
 EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
 
--- 3. Create Players Table
+ --Create Players Table
 CREATE TABLE IF NOT EXISTS players (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   first_name VARCHAR ( 255 ) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS players (
 
 );
 
--- 4. Create Transfers Table
+--Create Transfers Table
 CREATE TABLE IF NOT EXISTS transfers (
   id             INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   player_id      INTEGER NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS transfers (
 CREATE INDEX IF NOT EXISTS idx_transfers_player_id     ON transfers(player_id);
 CREATE INDEX IF NOT EXISTS idx_transfers_transferred_at ON transfers(transferred_at DESC);
 
--- 5. Create User Table
+--Create User Table
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   email VARCHAR ( 255 ) NOT NULL UNIQUE,
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS users (
   bio VARCHAR ( 255 ) NOT NULL
 );
 
--- 6. Seed Clubs
+ --Seed Clubs
 INSERT INTO clubs (name, country, stadium)
 VALUES
   ('Arsenal', 'England', 'Emirates Stadium'),
@@ -72,7 +72,7 @@ VALUES
   ('Southampton', 'England', 'St. Mary''s Stadium')
 ON CONFLICT (name) DO NOTHING;
 
--- 7. Seed Players
+--Seed Players
 INSERT INTO players (first_name, last_name, nationality, position, date_of_birth, club_id)
 VALUES
   ('Bukayo', 'Saka', 'England', 'Attacker', '2001-09-05', (SELECT id FROM clubs WHERE name = 'Arsenal')),
@@ -85,7 +85,7 @@ VALUES
   ('Reece', 'James', 'England', 'Defender', '1999-12-08', (SELECT id FROM clubs WHERE name = 'Chelsea'))
   ON CONFLICT (first_name, last_name, date_of_birth) DO NOTHING;
 
--- 8. Seed Transfers
+--Seed Transfers
 INSERT INTO transfers (player_id, from_club_id, to_club_id, transferred_at, amount)
 VALUES
   (
@@ -103,6 +103,23 @@ VALUES
     84650000.00
   )
   ON CONFLICT (player_id, from_club_id, to_club_id,  transferred_at) DO NOTHING;
+
+  --Creating Standings Table
+
+  CREATE TABLE IF NOT EXISTS standings (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    competition VARCHAR(255) NOT NULL,
+    season VARCHAR(10) NOT NULL,
+    position INTEGER NOT NULL,
+    team_name VARCHAR(255) NOT NULL,
+    played INTEGER NOT NULL,
+    won INTEGER NOT NULL,
+    drawn INTEGER NOT NULL,
+    lost INTEGER NOT NULL,
+    points INTEGER NOT NULL,
+    synced_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT uq_standings UNIQUE (competition, season, team_name)
+  );
 `;
 
 async function main() {
