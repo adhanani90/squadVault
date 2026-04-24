@@ -17,6 +17,7 @@ export default defineConfig({
       '/auth':    { target: 'http://localhost:3000', changeOrigin: true },
       '/clubs':   { target: 'http://localhost:3000', changeOrigin: true },
       '/players': { target: 'http://localhost:3000', changeOrigin: true },
+      '/league': { target: 'http://localhost:3000', changeOrigin: true },
     }
   }
 });

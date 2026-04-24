@@ -206,6 +206,13 @@ async function searchPlayers(searchTerm, nationality) {
     }
 }
 
+async function getStandings() {
+    const {rows} = await pool.query(
+        "SELECT * FROM standings ORDER BY position"
+    )
+    return rows; 
+}
+
 
 module.exports = {
     getAllClubs,
@@ -227,5 +234,6 @@ module.exports = {
     searchClubs,
     searchPlayers,
     getTransfersForPlayer,
-    executeTransfer
+    executeTransfer,
+    getStandings
 };

@@ -18,6 +18,7 @@ export default function NavBar() {
         </Link>
         <Link to="/clubs" className="nav-link">Clubs</Link>
         <Link to="/players" className="nav-link">Players</Link>
+        <Link to="/standings" className="nav-link">Standings</Link>
       </div>
 
       <div className="flex items-center gap-4">

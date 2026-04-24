@@ -9,12 +9,9 @@ require('dotenv').config();
 const indexRouter = require('./routes/indexRouter');
 const playerRouter = require('./routes/playerRouter');
 const authRouter = require('./routes/authRoute');
+const leagueRouter = require('./routes/leagueRoute')
 
 // CORS — allow the React frontend to send cookies cross-origin
-app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
-  credentials: true
-}));
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "dist")));
@@ -40,6 +37,7 @@ app.use((req, res, next) => {
 app.use('/auth', authRouter);
 app.use('/clubs', indexRouter);    // All routes in indexRouter now start with /clubs
 app.use('/players', playerRouter);
+app.use('/league', leagueRouter)
 
 app.get('/', (req, res) => res.redirect('/clubs'));
 
