@@ -11,7 +11,10 @@ const playerRouter = require('./routes/playerRouter');
 const authRouter = require('./routes/authRoute');
 const leagueRouter = require('./routes/leagueRoute')
 
-// CORS — allow the React frontend to send cookies cross-origin
+// importing redis client for use in other files
+const redisClient = require('./utils/redis');
+
+
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "dist")));

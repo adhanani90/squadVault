@@ -11,9 +11,9 @@
     "test": "jest --globalSetup=./tests/setup.js --runInBand --detectOpenHandles",
     "test:watch": "jest --watchAll --globalSetup=./tests/setup.js --runInBand",
     "build": "npm install --prefix client && npm run build --prefix client",
-    "db:clear" : "node db/clearDB.js",
-    "db:reset" : "node db/clearDB.js && node db/populateDB.js",
-    "db:sync" : "node db/syncFootballData.js",
+    "db:clear": "node db/clearDB.js",
+    "db:reset": "node db/clearDB.js && node db/populateDB.js",
+    "db:sync": "node db/syncFootballData.js",
     "test:coverage": "jest --globalSetup=./tests/setup.js --coverage --runInBand --detectOpenHandles"
   },
   "repository": {
@@ -45,6 +45,7 @@
     "jsonwebtoken": "^9.0.3",
     "method-override": "^3.0.0",
     "pg": "^8.20.0",
+    "redis": "^5.12.1",
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
