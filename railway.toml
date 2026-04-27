@@ -4,4 +4,3 @@ dockerfilePath  = "Dockerfile"
 
 [deploy]
 startCommand = "node db/populateDB.js && node app.js"
-healthcheckPath = "/"
