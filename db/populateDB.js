@@ -182,7 +182,12 @@ async function main() {
 }
 
 if (require.main === module) {
-  main();
+  main()
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
 }
 
 module.exports = main;
