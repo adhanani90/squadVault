@@ -1,5 +1,6 @@
 const db = require("../db/queries");
 const redisClient = require("../utils/redis");
+const sync = require("../db/syncFootballData");
 
 async function getStandings(req, res){
 
@@ -8,11 +9,18 @@ async function getStandings(req, res){
     if (redisClient.isReady) {
         const cachedStandings = await redisClient.get("standings");
         if (cachedStandings) {
-            return res.json(JSON.parse(cachedStandings))
+            // check length, do not return if it is less than 10
+             const parsedString = JSON.parse(cachedStandings)
+             if (parsedString.length > 0) {
+                return res.json(parsedString)
+            }
+
         }
         else {
             const standings = await db.getStandings();
-            redisClient.set("standings", JSON.stringify(standings), {EX:60*60});
+            if (standings.length > 10) {
+                redisClient.set("standings", JSON.stringify(standings), {EX:60*60});
+            }
             return res.json(standings)
         }
     }
@@ -20,6 +28,13 @@ async function getStandings(req, res){
     return res.json(await db.getStandings());
 }
 
+async function syncStandings(req, res) {
+    await sync();
+    redisClient.del("standings"); 
+    return res.json({message: "Successfully synced standings"});
+}
+
 module.exports = {
-    getStandings
+    getStandings,
+    syncStandings
 }

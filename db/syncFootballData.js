@@ -48,7 +48,6 @@ async function main() {
     
 
     console.log("Standings updated!");
-    await pool.end();
 
   } catch (err) {
     console.error("Error during update:", err.stack);
@@ -57,7 +56,7 @@ async function main() {
 }
 
 if (require.main === module) {
-  main();
+  main().then(() => pool.end());
 }
 
 module.exports = main;
