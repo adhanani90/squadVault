@@ -36,6 +36,7 @@ export default function PlayersPage() {
     setSearching(true);
     api.get(`/players/search?searchedName=${encodeURIComponent(debouncedSearch)}&nationality=${encodeURIComponent(debouncedNationality)}`)
       .then(data => setDisplayedPlayers(data))
+      .catch(err => setErrors(err.errors ?? [{ msg: err.message }]))
       .finally(() => setSearching(false));
   }, [debouncedSearch, debouncedNationality, players]);
 

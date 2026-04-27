@@ -5,10 +5,14 @@ const getStandings = async () => {
   const res = await fetch('https://api.football-data.org/v4/competitions/PL/standings', {
     headers: { 'X-Auth-Token': process.env.FOOTBALL_ORG_API }
   });
-  
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch data from Football.Org API: ${res.status} ${res.statusText}`);
+  }
 
   const requestsLeft = res.headers.get("X-RequestsAvailable");
   const resetInSeconds = res.headers.get("X-RequestCounter-Reset");
+
 
   console.log(`The Football.Org API has ${requestsLeft} requests left. It will reset in ${resetInSeconds} seconds.`)
 

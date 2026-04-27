@@ -29,7 +29,7 @@ async function createUser(req, res) {
 async function loginUser(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(401).json({ errors: errors.array() });
+        return res.status(400).json({ errors: errors.array() });
     }
 
     const { email, password } = req.body;

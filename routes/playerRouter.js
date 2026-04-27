@@ -11,7 +11,8 @@ const playerValidationRules = [
     body('lastName').trim().notEmpty().isLength({ min: 2, max: 255 }).withMessage('Last name must be 2-255 characters'),
     body('position').trim().notEmpty().isIn(POSITIONS).withMessage(`Position must be one of: ${POSITIONS.join(', ')}`),
     body('nationality').trim().notEmpty().isLength({ min: 2, max: 255 }).withMessage('Nationality must be 2-255 characters'),
-    body('clubId').trim().notEmpty().isInt({ min: 1 }).withMessage('Club ID must be a positive integer')
+    body('clubId').trim().notEmpty().isInt({ min: 1 }).withMessage('Club ID must be a positive integer'),
+    body('dateOfBirth').trim().notEmpty().isISO8601().withMessage('Date of birth must be a valid ISO 8601 date'),
 ];
 
 const transferValidationRules = [

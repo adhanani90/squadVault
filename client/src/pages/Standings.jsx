@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import ErrorList from '../components/ErrorList';
+import { useAuth } from '../context/AuthContext';
 
 export default function Standings() {
     const [standings, setStandings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [errors, setErrors] = useState([]);
+    const { user } = useAuth();
 
     const fetchStandings = () =>
         api.get('/league/standings').then(data => setStandings(data)).finally(() => setLoading(false));
@@ -51,9 +53,9 @@ export default function Standings() {
                     ))}
                 </tbody>
             </table>
-            {/*Adding a button to refresh the standings*/}
-            <button onClick={syncStandings} className='btn-primary'>Sync standings</button>
-            <p>Last updated: {new Date(standings[0]?.synced_at).toLocaleDateString()}</p>
+            {/*Conditionally render the buttons based on user status and standings length*/}
+            {user ? <button onClick={syncStandings} className='btn-primary'>Sync standings</button> : null}
+            {standings.length > 0 ? <p>Last updated: {new Date(standings[0]?.synced_at).toLocaleDateString()}</p> : <p>Last updated: Never updated</p>}
         </div>
     );
 }   

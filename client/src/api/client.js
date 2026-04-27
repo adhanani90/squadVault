@@ -12,7 +12,8 @@ async function apiFetch(path, options = {}) {
   if (!res.ok) {
     // Redirect to login on 401 for any route except /auth/me
     // (/auth/me returning 401 is the normal unauthenticated state, handled by AuthContext)
-    if (res.status === 401 && path !== '/auth/me') {
+    const noRedirectPaths = ['/auth/me', '/auth/login', '/auth/signup'];
+    if (res.status === 401 && !noRedirectPaths.includes(path)) {
       window.location.href = '/login';
       return;
     }

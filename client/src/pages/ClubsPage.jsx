@@ -33,6 +33,7 @@ export default function ClubsPage() {
     setSearching(true);
     api.get(`/clubs/search?searchedName=${encodeURIComponent(debouncedSearch)}&country=${encodeURIComponent(debouncedCountry)}`)
       .then(data => setDisplayedClubs(data))
+      .catch(err => setErrors(err.errors ?? [{ msg: err.message }]))
       .finally(() => setSearching(false));
   }, [debouncedSearch, debouncedCountry, clubs]);
 
