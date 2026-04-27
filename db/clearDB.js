@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS players;
 DROP TABLE IF EXISTS clubs;
 DROP TYPE IF EXISTS positions;
+DROP TABLE IF EXISTS standings; 
 `;
 
 async function main() {

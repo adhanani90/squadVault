@@ -3,5 +3,5 @@ builder = "DOCKERFILE"
 dockerfilePath  = "Dockerfile"
 
 [deploy]
-startCommand = "node app.js"
+startCommand = "node db/populateDB.js && node app.js"
 healthcheckPath = "/"

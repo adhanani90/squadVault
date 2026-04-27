@@ -17,7 +17,7 @@ client.on("reconnecting", () => {
 });
 
 // await connection
-client.connect();
+client.connect().catch(err => console.error("Redis connection failed", err));
     
 
 
