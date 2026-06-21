@@ -27,6 +27,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      ml:
+        condition: service_started
 
     environment:
       PORT: 3000
@@ -39,6 +41,9 @@ services:
       FOOTBALL_ORG_API: ${FOOTBALL_ORG_API}
       NODE_ENV: development
       REDIS_URL: redis://redis:6379
+      ML_URL: http://ml:8000
+
+
 
 
   seeder:
@@ -55,9 +60,9 @@ services:
       DB_NAME: squadvault
       DB_PASSWORD: postgres
       DB_PORT: 5432
-      JWT_SECRET: GBfChCMY8MB7wnymkWhtoD3cRlA1CC5e6iWSBmnuaSg
+      JWT_SECRET: ${JWT_SECRET}
       NODE_ENV: development
-      FOOTBALL_ORG_API: b589a12e418b4eed888133e60012e64b
+      FOOTBALL_ORG_API: ${FOOTBALL_ORG_API}
     command: sh -c "node db/clearDB.js && node db/populateDB.js"
 
   redis:
@@ -72,4 +77,9 @@ services:
       timeout: 5s 
       retries: 5
       start_period: 10s
-    
+  ml:
+    build: ./ml
+    container_name: squadvault-ml
+    restart: always
+    ports:
+      - 8000:8000

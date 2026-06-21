@@ -18,6 +18,8 @@ export default defineConfig({
       '/clubs':   { target: 'http://localhost:3000', changeOrigin: true },
       '/players': { target: 'http://localhost:3000', changeOrigin: true },
       '/league': { target: 'http://localhost:3000', changeOrigin: true },
+      '/api/ml': { target: 'http://localhost:8000', changeOrigin: true, rewrite: path => path.replace(/^\/api\/ml/, '') },
     }
+
   }
 });

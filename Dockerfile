@@ -35,4 +35,4 @@ COPY controllers ./controllers
 RUN npm install --omit=dev
 
 EXPOSE 3000
-CMD ["sh", "-c", "node db/populateDB.js && node app.js"]
+CMD ["node", "app.js"]

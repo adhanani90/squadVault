@@ -13,9 +13,24 @@ const leagueRouter = require('./routes/leagueRoute')
 
 // importing redis client for use in other files
 const redisClient = require('./utils/redis');
+const {createProxyMiddleware} = require('http-proxy-middleware');
 
+// ✅ API & Proxy middleware FIRST (before static files)
+app.use('/api/ml', createProxyMiddleware({
+  target: process.env.ML_URL || 'http://localhost:8000',
+  changeOrigin: true,
+  pathRewrite: { '^/api/ml': '' },
+  logLevel: 'debug',
+  onError: (err, req, res) => {
+    console.error('ML Proxy Error:', err);
+    res.status(503).json({ error: 'ML service unavailable', details: err.message });
+  },
+  onProxyRes: (proxyRes, req, res) => {
+    console.log(`[ML Proxy] ${req.method} ${req.path} -> ${proxyRes.statusCode}`);
+  }
+}))
 
-
+// Static files after API routes
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "dist")));
 

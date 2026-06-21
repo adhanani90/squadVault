@@ -3,3 +3,5 @@ node_modules/
 coverage/
 addTheseTests.txt
 .claude/
+ml/venv/
+ml/__pycache__/
