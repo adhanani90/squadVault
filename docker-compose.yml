@@ -35,8 +35,8 @@ services:
       DB_NAME: squadvault
       DB_PASSWORD: postgres
       DB_PORT: 5432
-      JWT_SECRET: GBfChCMY8MB7wnymkWhtoD3cRlA1CC5e6iWSBmnuaSg
-      FOOTBALL_ORG_API: b589a12e418b4eed888133e60012e64b
+      JWT_SECRET: ${JWT_SECRET}
+      FOOTBALL_ORG_API: ${FOOTBALL_ORG_API}
       NODE_ENV: development
       REDIS_URL: redis://redis:6379
 
