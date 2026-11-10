@@ -1,4 +1,6 @@
 const request = require('supertest');
+const fs = require('node:fs');
+const path = require('node:path');
 const app = require('../app');
 const pool = require('../db/pool');
 const testHelper = require('./testHelper');
@@ -14,10 +16,19 @@ describe('App Routes', () => {
   });
 
   describe('GET /', () => {
-    it('should redirect to /clubs', async () => {
+    it('should serve the built React app and its entry script', async () => {
+      const builtHtml = fs.readFileSync(path.join(__dirname, '../dist/index.html'), 'utf8');
       const res = await request(app).get('/');
-      expect(res.status).toBe(302);
-      expect(res.header.location).toBe('/clubs');
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toMatch(/text\/html/);
+      expect(res.text).toBe(builtHtml);
+      expect(res.text).toContain('<div id="root"></div>');
+
+      const entryScript = res.text.match(/<script\b[^>]*src="([^"]+)"/);
+      expect(entryScript).not.toBeNull();
+      const asset = await request(app).get(entryScript[1]);
+      expect(asset.status).toBe(200);
+      expect(asset.headers['content-type']).toMatch(/javascript/);
     });
   });
 

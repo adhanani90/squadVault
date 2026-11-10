@@ -37,15 +37,19 @@ Live demo: https://squadvault-production.up.railway.app/
    FOOTBALL_ORG_API=your_football_org_api_key. note: this is a free api key that needs to be generated from https://www.football-data.org
 ```
 
-3. Start the server:
+3. Build the React frontend and start the server:
 ```bash
+   npm run build
    npm start
 ```
 
 4. Navigate to `http://localhost:3000`
 
-To run the test suite:
+The build installs the client dependencies and generates `dist/`, which is not tracked in Git. Rebuild after changing the frontend.
+
+To run the test suite, build the frontend first so the root-route tests can verify the served app:
 ```bash
+npm run build
 npm test
 ```
 

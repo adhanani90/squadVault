@@ -57,10 +57,6 @@ app.use('/clubs', indexRouter);    // All routes in indexRouter now start with /
 app.use('/players', playerRouter);
 app.use('/league', leagueRouter)
 
-app.get('/', (req, res) => res.redirect('/clubs'));
-
-
-// Catch-all: serve React app for any non-API route (supports client-side routing)
 // Catch-all: serve React SPA for client-side routes when built
 app.use((req, res, next) => {
   const distIndex = path.join(__dirname, 'dist', 'index.html');

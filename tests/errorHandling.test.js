@@ -93,7 +93,8 @@ describe('Error Handling & Edge Cases', () => {
   describe('Global Error Handler', () => {
     it('should respond to the root route without crashing', async () => {
       const res = await request(app).get('/');
-      expect(res.status).toBe(302);
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toMatch(/text\/html/);
     });
   });
 
