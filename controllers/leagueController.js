@@ -30,7 +30,9 @@ async function getStandings(req, res){
 
 async function syncStandings(req, res) {
     await sync();
-    await redisClient.del("standings"); 
+    if (redisClient.isReady) {
+        await redisClient.del("standings");
+    }
     return res.json({message: "Successfully synced standings"});
 }
 
