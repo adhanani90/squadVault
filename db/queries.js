@@ -208,7 +208,8 @@ async function searchPlayers(searchTerm, nationality) {
 
 async function getStandings() {
     const {rows} = await pool.query(
-        "SELECT * FROM standings ORDER BY position"
+        // only return the most recent season, older seasons stay in the table as history
+        "SELECT * FROM standings WHERE season = (SELECT MAX(season) FROM standings) ORDER BY position"
     )
     return rows; 
 }
