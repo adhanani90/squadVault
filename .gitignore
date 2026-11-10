@@ -5,3 +5,4 @@ addTheseTests.txt
 .claude/
 ml/venv/
 ml/__pycache__/
+dist/

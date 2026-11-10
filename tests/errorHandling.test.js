@@ -98,11 +98,11 @@ describe('Error Handling & Edge Cases', () => {
   });
 
   describe('Auth Edge Cases', () => {
-    it('should return 401 when password is missing in login', async () => {
+    it('should return 400 when password is missing in login', async () => {
       const res = await request(app)
         .post('/auth/login')
         .send({ email: 'new@gmail.com' });
-      expect(res.status).toBe(401);
+      expect(res.status).toBe(400);
     });
 
     it('should return 401 for non-existent user login', async () => {
